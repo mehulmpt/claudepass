@@ -70,6 +70,7 @@ const fmtLadder = (ladder: number[]) =>
 export const DONORS = [
 	{ handle: 'mehulmpt', passes: 3 },
 	{ handle: 'YashSolanki_', passes: 3 },
+	{ handle: 'MaheshBauti', passes: 3 },
 ]
 
 const donorList = () =>
@@ -175,7 +176,7 @@ const html = ({
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude Code guest passes · claudepass</title>
-<meta name="description" content="Win a free week of Claude Code. 6 guest passes up for grabs, shared by @mehulmpt and @YashSolanki_: pick a ticket, one pull every 15 seconds, long odds. Winners get the pass by email.">
+<meta name="description" content="Win a free week of Claude Code. 9 guest passes up for grabs, shared by @mehulmpt, @YashSolanki_ and @MaheshBauti: pick a ticket, one pull every 15 seconds, long odds. Winners get the pass by email.">
 <meta name="author" content="Mehul Mohan">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#0e0e11">
@@ -186,7 +187,7 @@ const html = ({
 <meta property="og:site_name" content="claudepass">
 <meta property="og:url" content="${SITE}/">
 <meta property="og:title" content="Claude Code guest passes">
-<meta property="og:description" content="6 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 15 seconds. Odds: ${fmtLadder(ladder)}.">
+<meta property="og:description" content="9 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 15 seconds. Odds: ${fmtLadder(ladder)}.">
 <meta property="og:image" content="${SITE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -198,7 +199,7 @@ const html = ({
 <meta name="twitter:site" content="@mehulmpt">
 <meta name="twitter:creator" content="@mehulmpt">
 <meta name="twitter:title" content="Claude Code guest passes">
-<meta name="twitter:description" content="6 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 15 seconds, long odds.">
+<meta name="twitter:description" content="9 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 15 seconds, long odds.">
 <meta name="twitter:image" content="${SITE}/og.png">
 <meta name="twitter:image:alt" content="Three Claude Code guest pass tickets, one glowing orange.">
 

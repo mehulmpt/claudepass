@@ -8,3 +8,6 @@ dist/
 !.env.example
 *.log
 .DS_Store
+
+# Local-only record of each donor's referral link. Never commit.
+*.local.json

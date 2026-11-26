@@ -377,13 +377,15 @@ describe('config', () => {
 		expect(DONORS.reduce((sum, d) => sum + d.passes, 0)).toBe(TOTAL)
 	})
 
-	it('has odds for every pass: 10k, 10k, 20k, 20k, 100k, 100k', () => {
+	it('has odds for every pass: 10k x3, 20k x3, 100k x3', () => {
 		const ladder = parseLadder(env.WIN_ODDS)
 		expect(ladder).toHaveLength(TOTAL)
 		expect(
 			Array.from({ length: TOTAL }, (_, taken) =>
 				oddsOneIn({ ladder, taken }),
 			),
-		).toEqual([10000, 10000, 20000, 20000, 100000, 100000])
+		).toEqual([
+			10000, 10000, 10000, 20000, 20000, 20000, 100000, 100000, 100000,
+		])
 	})
 })
