@@ -361,6 +361,8 @@ form button:disabled { opacity: .5; cursor: default; }
 .board time { color: var(--dim); font: 11.5px var(--sans); }
 .board .empty { display: block; color: var(--muted); font: 12.5px var(--sans); }
 .board li.new .mail { color: var(--green); }
+.board .bots { margin: 10px 0 0; padding-top: 8px; border-top: 1px dashed var(--line-soft); font: 12px var(--sans); color: var(--muted); }
+.sk.w-bots { width: 16ch; }
 /* Wide screens: a small sidebar beside the card (absolute, so it never shifts layout). */
 @media (min-width: 1380px) {
 	.board {
@@ -555,6 +557,7 @@ form button:disabled { opacity: .5; cursor: default; }
 <aside class="board" aria-labelledby="board-title">
 	<h2 id="board-title">Winners <span id="board-count"><span class="sk w-count"></span></span></h2>
 	<ol id="board-list"><li class="empty">No winners yet. Could be you.</li></ol>
+	<p class="bots" id="bots" title="Wins nobody claimed within 5 minutes"><span class="sk w-bots"></span></p>
 </aside>
 
 <section class="donors" aria-labelledby="donors-title">
@@ -963,6 +966,11 @@ form button:disabled { opacity: .5; cursor: default; }
 		shownWinners = list.length;
 	}
 
+	function showBots(n) {
+		if (typeof n !== "number") return;
+		$("bots").textContent = "🤖 " + n.toLocaleString("en-US") + (n === 1 ? " foolish bot attempt" : " foolish bot attempts");
+	}
+
 	function showOdds(oneIn) {
 		if (typeof oneIn === "number") $("odds").textContent = "⚄ odds 1 in " + oneIn.toLocaleString("en-US");
 	}
@@ -973,6 +981,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		showOdds(data.oddsOneIn);
 		showPulls(data.pulls);
 		showWinners({ list: data.winners, total: data.total });
+		showBots(data.expiredWins);
 	}
 
 	// --- live counters ---------------------------------------------------------
@@ -985,6 +994,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		showPulls(data.pulls);
 		showOdds(data.oddsOneIn);
 		showWinners({ list: data.winners, total: data.total });
+		showBots(data.expiredWins);
 		if (typeof data.remaining === "number") setLeft(data.remaining);
 		if (data.remaining === 0 && !busy && !claimToken) soldOut();
 	}
@@ -1009,12 +1019,14 @@ form button:disabled { opacity: .5; cursor: default; }
 			$("odds").textContent = "⚄ odds —";
 			$("pulls").textContent = "⟳ —";
 			$("board-count").textContent = "";
+			$("bots").textContent = "";
 			say([line({ cls: "bad", text: "✗ " + (data.message || "Couldn't reach the server.") }), line({ cls: "m", text: "Reload the page in a minute." })]);
 			return;
 		}
 		showOdds(data.oddsOneIn);
 		showPulls(data.pulls);
 		showWinners({ list: data.winners, total: data.total });
+		showBots(data.expiredWins);
 		setLeft(data.remaining ?? 0);
 
 		const saved = JSON.parse(sessionStorage.getItem("claim") || "null");

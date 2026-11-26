@@ -364,6 +364,7 @@ describe('live stats', () => {
 			total: z.number(),
 			oddsOneIn: z.number(),
 			pulls: z.number(),
+			expiredWins: z.number(),
 			winners: z.array(
 				z.object({ email: z.string(), at: z.number() }).strict(),
 			),
@@ -423,5 +424,38 @@ describe('winners board', () => {
 			.object({ winners: z.array(z.unknown()) })
 			.parse(await res.json())
 		expect(body.winners).toHaveLength(0)
+	})
+})
+
+describe('foolish bot attempts', () => {
+	it('counts wins whose claim window ran out, and nothing else', async () => {
+		await reserve({ expiresIn: -1 }) // expired, never claimed
+		await reserve({ expiresIn: -1 }) // expired, never claimed
+		await reserve() // still pending
+		const claimedToken = await reserve()
+		await claim({
+			ip: nextIp(),
+			token: claimedToken,
+			email: 'real@example.com',
+		})
+		const res = await api({ path: '/api/status', ip: nextIp() })
+		const body = z
+			.object({ expiredWins: z.number(), remaining: z.number() })
+			.parse(await res.json())
+		expect(body.expiredWins).toBe(2)
+		expect(body.remaining).toBe(TOTAL - 2) // pending + claimed hold passes; expired don't
+	})
+
+	it('counts every winning roll, even one that could not reserve a pass', async () => {
+		forceRoll({ win: true })
+		const ip = nextIp()
+		await play({ ip })
+		await env.DB.prepare('UPDATE ip_limits SET last_play_at = 0').run()
+		await play({ ip }) // wins the roll, but this network already holds a pass
+		const rollWins = await env.DB.prepare(
+			"SELECT value AS n FROM counters WHERE name = 'roll_wins'",
+		).first()
+		expect(rollWins).toEqual({ n: 2 })
+		expect(await count('SELECT COUNT(*) n FROM claims')).toBe(1)
 	})
 })

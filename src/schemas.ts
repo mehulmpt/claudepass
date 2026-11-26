@@ -54,6 +54,10 @@ export const EmailError = z.object({
 // --- D1 rows -----------------------------------------------------------------------
 
 export const CountRow = z.object({ n: z.number() })
+export const PassCountsRow = z.object({
+	taken: z.number(),
+	expired: z.number(),
+})
 export const LastPlayRow = z.object({ last_play_at: z.number() })
 export const IdRow = z.object({ id: z.number() })
 export const ClaimStateRow = z.object({

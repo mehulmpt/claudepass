@@ -18,6 +18,7 @@ import {
 	EmailError,
 	IdRow,
 	LastPlayRow,
+	PassCountsRow,
 	PlayBody,
 	TurnstileResult,
 	WinnerRow,
@@ -109,14 +110,31 @@ function clientIp(req: Request): string | null {
 }
 
 /** Passes still available: total minus delivered minus currently-held reservations. */
-async function remainingPasses(t: number): Promise<number> {
+/**
+ * One pass over the (tiny) claims table:
+ * - remaining: passes not claimed and not held by a live reservation
+ * - expiredWins: wins whose 5-minute claim window ran out ("foolish bot attempts")
+ */
+async function passCounts(
+	t: number,
+): Promise<{ remaining: number; expiredWins: number }> {
 	const row = await first({
 		stmt: env.DB.prepare(
-			'SELECT COUNT(*) AS n FROM claims WHERE redeemed_at IS NOT NULL OR expires_at > ?1',
+			`SELECT
+				COALESCE(SUM(CASE WHEN redeemed_at IS NOT NULL OR expires_at > ?1 THEN 1 ELSE 0 END), 0) AS taken,
+				COALESCE(SUM(CASE WHEN redeemed_at IS NULL AND expires_at <= ?1 THEN 1 ELSE 0 END), 0) AS expired
+			 FROM claims`,
 		).bind(t),
-		schema: CountRow,
+		schema: PassCountsRow,
 	})
-	return Math.max(0, cfg().TOTAL_PASSES - (row?.n ?? 0))
+	return {
+		remaining: Math.max(0, cfg().TOTAL_PASSES - (row?.taken ?? 0)),
+		expiredWins: row?.expired ?? 0,
+	}
+}
+
+async function remainingPasses(t: number): Promise<number> {
+	return (await passCounts(t)).remaining
 }
 
 /** Every real pull so far (test mode never writes, so it isn't counted). */
@@ -171,8 +189,8 @@ async function verifyTurnstile({
 /** Global numbers only: identical for every visitor, so safe to cache at the edge. */
 async function stats(t: number) {
 	const { OPEN, TOTAL_PASSES, WIN_ODDS } = cfg()
-	const [remaining, pulls, claimed] = await Promise.all([
-		remainingPasses(t),
+	const [{ remaining, expiredWins }, pulls, claimed] = await Promise.all([
+		passCounts(t),
 		totalPulls(),
 		winners(),
 	])
@@ -185,6 +203,7 @@ async function stats(t: number) {
 			taken: TOTAL_PASSES - remaining,
 		}),
 		pulls,
+		expiredWins,
 		// Masked here, so full addresses never leave the Worker or reach the edge cache.
 		winners: claimed.map((w) => ({
 			email: maskEmail(w.email),
@@ -313,6 +332,11 @@ async function play(req: Request): Promise<Response> {
 	})
 	let token: string | null = null
 	if (rollWin(oneIn)) {
+		// Counted before reserving, so a winning roll that somehow fails to reserve still
+		// shows up (roll_wins > reservations). Wins are rare, so this write costs nothing.
+		await env.DB.prepare(
+			"INSERT INTO counters (name, value) VALUES ('roll_wins', 1) ON CONFLICT(name) DO UPDATE SET value = value + 1",
+		).run()
 		const candidate = randomToken()
 		// Reserve a pass only if one is free and this network holds none: not one already
 		// claimed, and not one still waiting to be claimed (the claim window outlasts the
