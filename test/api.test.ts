@@ -124,6 +124,7 @@ beforeEach(async () => {
 		env.DB.prepare('DELETE FROM claims'),
 		env.DB.prepare('DELETE FROM plays'),
 		env.DB.prepare('DELETE FROM ip_limits'),
+		env.DB.prepare('DELETE FROM counters'),
 	])
 	mockTurnstile({ success: true })
 })
@@ -340,16 +341,13 @@ describe('test mode', () => {
 })
 
 describe('status', () => {
-	it('counts every real pull', async () => {
-		const t = Math.floor(Date.now() / 1000)
-		await env.DB.prepare(
-			"INSERT INTO plays (ip_key, ip, won, created_at) VALUES ('a', 'a', 0, ?1), ('b', 'b', 0, ?2), ('c', 'c', 0, ?3)",
-		)
-			.bind(t - 60, t - 86_000, t - 9_000_000)
-			.run()
+	it('counts every real pull from a running counter', async () => {
+		forceRoll({ win: false })
+		for (let i = 0; i < 3; i++) await play({ ip: nextIp() })
 		const res = await api({ path: '/api/status', ip: nextIp() })
 		const body = z.object({ pulls: z.number() }).parse(await res.json())
 		expect(body.pulls).toBe(3)
+		expect(await count('SELECT COUNT(*) n FROM plays')).toBe(3)
 	})
 })
 

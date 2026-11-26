@@ -122,8 +122,11 @@ async function remainingPasses(t: number): Promise<number> {
 
 /** Every real pull so far (test mode never writes, so it isn't counted). */
 async function totalPulls(): Promise<number> {
+	// A one-row counter, not COUNT(*): D1 bills every row a query reads.
 	const row = await first({
-		stmt: env.DB.prepare('SELECT COUNT(*) AS n FROM plays'),
+		stmt: env.DB.prepare(
+			"SELECT value AS n FROM counters WHERE name = 'pulls'",
+		),
 		schema: CountRow,
 	})
 	return row?.n ?? 0
@@ -334,11 +337,14 @@ async function play(req: Request): Promise<Response> {
 		if (reserved) token = candidate
 	}
 
-	await env.DB.prepare(
-		'INSERT INTO plays (ip_key, ip, country, won, created_at) VALUES (?1, ?2, ?3, ?4, ?5)',
-	)
-		.bind(key, ip, req.cf?.country ?? null, token ? 1 : 0, t)
-		.run()
+	await env.DB.batch([
+		env.DB.prepare(
+			'INSERT INTO plays (ip_key, ip, country, won, created_at) VALUES (?1, ?2, ?3, ?4, ?5)',
+		).bind(key, ip, req.cf?.country ?? null, token ? 1 : 0, t),
+		env.DB.prepare(
+			"INSERT INTO counters (name, value) VALUES ('pulls', 1) ON CONFLICT(name) DO UPDATE SET value = value + 1",
+		),
+	])
 
 	return token
 		? json({
@@ -475,7 +481,8 @@ async function claim({
  * Turnstile, writes to D1 or sends email costs more.
  */
 function apiWeight(pathname: string): number {
-	return pathname === '/api/status' ? 1 : 10
+	if (pathname === '/api/status') return 1
+	return pathname === '/api/play' ? 3 : 5
 }
 
 /** Workers Rate Limiting binding, keyed by network so one allowance covers all routes. */

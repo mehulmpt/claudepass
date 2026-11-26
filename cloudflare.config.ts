@@ -18,10 +18,11 @@ export default defineConfig({
 			}),
 			// Secondary flood guard in front of /api/*. Approximate and per Cloudflare location
 			// (see docs), so the strict limit stays the atomic D1 check. One allowance per network,
-			// with weighted calls: status = 1 unit, play/claim = 10 units.
+			// with weighted calls: status = 1, play = 3, claim = 5 units. Sized so a player
+			// pulling at the full cooldown rate (20/min) plus status refreshes stays under it.
 			API_LIMITER: bindings.rateLimit({
 				namespace: '72601',
-				simple: { limit: 60, period: 60 },
+				simple: { limit: 120, period: 60 },
 			}),
 			EMAIL: bindings.sendEmail({
 				allowedSenderAddresses: ['giveaway@mehulmohan.com'],
@@ -33,7 +34,7 @@ export default defineConfig({
 			WIN_ODDS: bindings.text(
 				'10000,10000,10000,20000,20000,20000,100000,100000,100000',
 			),
-			COOLDOWN_SECONDS: bindings.text('15'),
+			COOLDOWN_SECONDS: bindings.text('3'),
 			CLAIM_WINDOW_SECONDS: bindings.text('300'),
 			FROM_ADDRESS: bindings.text('giveaway@mehulmohan.com'),
 			TURNSTILE_SITE_KEY: bindings.text('0x4AAAAAAGTCTKlBQ9uJLIpN'),
