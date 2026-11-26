@@ -11,7 +11,9 @@ export default defineConfig({
 		domains: ['claudepass.mehulmohan.com'],
 		workersDev: false,
 		previewUrls: false,
-		observability: { enabled: true },
+		// Live tail stays available for debugging, but logs are not stored: Workers Logs
+		// bills per stored event, and at ~50M requests/month that was ~$18/month.
+		observability: { enabled: true, logs: { persist: false } },
 		env: {
 			DB: bindings.d1({
 				id: 'ba9c0784-2d2e-4e45-b3e4-f7e1e64fcd3d',
