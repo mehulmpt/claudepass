@@ -31,7 +31,7 @@ export default defineConfig({
 			TOTAL_PASSES: bindings.text('6'),
 			// "1 in N" odds for each pass in order (1st, 2nd, ...): it gets harder as passes go.
 			WIN_ODDS: bindings.text('10000,10000,20000,20000,100000,100000'),
-			COOLDOWN_SECONDS: bindings.text('60'),
+			COOLDOWN_SECONDS: bindings.text('15'),
 			CLAIM_WINDOW_SECONDS: bindings.text('300'),
 			FROM_ADDRESS: bindings.text('giveaway@mehulmohan.com'),
 			TURNSTILE_SITE_KEY: bindings.text('0x4AAAAAAGTCTKlBQ9uJLIpN'),

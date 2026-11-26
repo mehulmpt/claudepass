@@ -175,7 +175,7 @@ const html = ({
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude Code guest passes · claudepass</title>
-<meta name="description" content="Win a free week of Claude Code. 6 guest passes up for grabs, shared by @mehulmpt and @YashSolanki_: pick a ticket, one pull a minute, long odds. Winners get the pass by email.">
+<meta name="description" content="Win a free week of Claude Code. 6 guest passes up for grabs, shared by @mehulmpt and @YashSolanki_: pick a ticket, one pull every 15 seconds, long odds. Winners get the pass by email.">
 <meta name="author" content="Mehul Mohan">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#0e0e11">
@@ -186,7 +186,7 @@ const html = ({
 <meta property="og:site_name" content="claudepass">
 <meta property="og:url" content="${SITE}/">
 <meta property="og:title" content="Claude Code guest passes">
-<meta property="og:description" content="6 free weeks of Claude Code up for grabs. Pick a ticket, one pull a minute. Odds: ${fmtLadder(ladder)}.">
+<meta property="og:description" content="6 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 15 seconds. Odds: ${fmtLadder(ladder)}.">
 <meta property="og:image" content="${SITE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -198,7 +198,7 @@ const html = ({
 <meta name="twitter:site" content="@mehulmpt">
 <meta name="twitter:creator" content="@mehulmpt">
 <meta name="twitter:title" content="Claude Code guest passes">
-<meta name="twitter:description" content="6 free weeks of Claude Code up for grabs. Pick a ticket, one pull a minute, long odds.">
+<meta name="twitter:description" content="6 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 15 seconds, long odds.">
 <meta name="twitter:image" content="${SITE}/og.png">
 <meta name="twitter:image:alt" content="Three Claude Code guest pass tickets, one glowing orange.">
 
@@ -480,7 +480,7 @@ form button:disabled { opacity: .5; cursor: default; }
 
 		<div class="out" id="out" aria-live="polite"><p><span class="sk w-a"></span></p><p><span class="sk w-b"></span></p></div>
 		<div class="slot">
-			<p class="hint off" id="hint">← → to pick · Enter to pull · one pull a minute</p>
+			<p class="hint off" id="hint">← → to pick · Enter to pull · one pull every 15s</p>
 			<form id="claim" class="off" autocomplete="on">
 				<span class="p">&gt;</span>
 				<input id="email" type="email" name="email" placeholder="you@example.com" required autocomplete="email" spellcheck="false">
@@ -492,7 +492,7 @@ form button:disabled { opacity: .5; cursor: default; }
 	<div class="status">
 		<span>⌂ claudepass.mehulmohan.com</span>
 		<span id="odds">⚄ odds <span class="sk w-odds"></span></span>
-		<span><span class="dot">●</span> 1 pull / min / network</span>
+		<span><span class="dot">●</span> 1 pull / 15s / network</span>
 		<span id="pulls">⟳ <span class="sk w-pulls"></span></span>
 	</div>
 </main>
@@ -806,7 +806,7 @@ form button:disabled { opacity: .5; cursor: default; }
 			return;
 		}
 		if (!(res.status === 200)) mood({ state: null });
-		if (res.status === 429 && d.nextPlayAt) return cooldown({ nextPlayAt: d.nextPlayAt, lead: [line({ cls: "bad", text: "✗ This network already pulled in the last minute." })] });
+		if (res.status === 429 && d.nextPlayAt) return cooldown({ nextPlayAt: d.nextPlayAt, lead: [line({ cls: "bad", text: "✗ This network pulled less than 15 seconds ago." })] });
 		if (res.status === 410) return soldOut();
 		t.classList.remove("chosen");
 		$("tickets").classList.remove("locked");
@@ -937,7 +937,7 @@ form button:disabled { opacity: .5; cursor: default; }
 
 		if (!data.open) { say([line({ cls: "m", text: "The giveaway isn't open yet. Check back soon." })]); return; }
 		if (data.remaining === 0) return soldOut();
-		if (data.nextPlayAt) return cooldown({ nextPlayAt: data.nextPlayAt, lead: [line({ cls: "m", text: "You've already pulled in the last minute." })] });
+		if (data.nextPlayAt) return cooldown({ nextPlayAt: data.nextPlayAt, lead: [line({ cls: "m", text: "You pulled less than 15 seconds ago." })] });
 		reset();
 		mood({ state: "wave", ms: 1000 });
 	})();
