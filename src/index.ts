@@ -10,7 +10,6 @@ import {
 	rollWin,
 	sha256,
 } from './lib.ts'
-import { renderPage } from './page.ts'
 import {
 	ClaimBody,
 	ClaimStateRow,
@@ -559,15 +558,9 @@ export default {
 	): Promise<Response> {
 		const url = new URL(req.url)
 
-		if (
-			url.pathname === '/' &&
-			(req.method === 'GET' || req.method === 'HEAD')
-		) {
-			return renderPage({
-				siteKey: env.TURNSTILE_SITE_KEY,
-				ladder: cfg().WIN_ODDS,
-			})
-		}
+		// "/" never reaches here: the home page is a static asset (public/index.html)
+		// that Cloudflare serves before the Worker runs.
+
 		// Cached and identical for everyone, so it skips the per-network rate limiter.
 		if (url.pathname === '/api/stats' && req.method === 'GET')
 			return cachedStats(ctx)

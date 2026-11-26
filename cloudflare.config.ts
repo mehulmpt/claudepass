@@ -1,5 +1,6 @@
 import { bindings, defineConfig } from 'cf/config'
 import * as entrypoint from './src/index.ts' with { type: 'cf-worker' }
+import * as settings from './src/settings.ts'
 
 export default defineConfig({
 	worker: {
@@ -28,16 +29,15 @@ export default defineConfig({
 				allowedSenderAddresses: ['giveaway@mehulmohan.com'],
 			}),
 
-			// Tunables. Each IP (IPv6: per /64) gets one play per cooldown.
-			TOTAL_PASSES: bindings.text('12'),
-			// "1 in N" odds for each pass in order (1st, 2nd, ...): it gets harder as passes go.
-			WIN_ODDS: bindings.text(
-				'10000,10000,10000,20000,20000,20000,50000,50000,50000,100000,100000,100000',
+			// Tunables live in src/settings.ts (shared with the pre-rendered page).
+			TOTAL_PASSES: bindings.text(String(settings.TOTAL_PASSES)),
+			WIN_ODDS: bindings.text(settings.WIN_ODDS.join(',')),
+			COOLDOWN_SECONDS: bindings.text(String(settings.COOLDOWN_SECONDS)),
+			CLAIM_WINDOW_SECONDS: bindings.text(
+				String(settings.CLAIM_WINDOW_SECONDS),
 			),
-			COOLDOWN_SECONDS: bindings.text('3'),
-			CLAIM_WINDOW_SECONDS: bindings.text('300'),
 			FROM_ADDRESS: bindings.text('giveaway@mehulmohan.com'),
-			TURNSTILE_SITE_KEY: bindings.text('0x4AAAAAAGTCTKlBQ9uJLIpN'),
+			TURNSTILE_SITE_KEY: bindings.text(settings.TURNSTILE_SITE_KEY),
 
 			// Set to "false" to close the giveaway without taking the site down.
 			OPEN: bindings.text('true'),

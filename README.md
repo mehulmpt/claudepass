@@ -23,7 +23,8 @@ DM [@mehulmpt](https://x.com/mehulmpt) on X.
 
 ```sh
 pnpm install
-pnpm check   # typecheck, prettier, tests
+pnpm check        # typecheck, prettier, tests
+pnpm render:page  # after editing src/settings.ts or src/page.ts
 ```
 
 Free to enter. Not affiliated with Anthropic; Claude is a trademark of Anthropic, PBC. [MIT](LICENSE) licensed.

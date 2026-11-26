@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code guest passes · claudepass</title>
+<meta name="description" content="Win a free week of Claude Code. 12 guest passes up for grabs, shared by @mehulmpt, @YashSolanki_, @MaheshBauti and @BhagyaMudgal: pick a ticket, one pull every 3 seconds, long odds. Winners get the pass by email.">
+<meta name="author" content="Mehul Mohan">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0e0e11">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://claudepass.mehulmohan.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="claudepass">
+<meta property="og:url" content="https://claudepass.mehulmohan.com/">
+<meta property="og:title" content="Claude Code guest passes">
+<meta property="og:description" content="12 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 3 seconds. Odds: 1 in 10,000 ×3 → 20,000 ×3 → 50,000 ×3 → 100,000 ×3.">
+<meta property="og:image" content="https://claudepass.mehulmohan.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Three Claude Code guest pass tickets, one glowing orange.">
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@mehulmpt">
+<meta name="twitter:creator" content="@mehulmpt">
+<meta name="twitter:title" content="Claude Code guest passes">
+<meta name="twitter:description" content="12 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 3 seconds, long odds.">
+<meta name="twitter:image" content="https://claudepass.mehulmohan.com/og.png">
+<meta name="twitter:image:alt" content="Three Claude Code guest pass tickets, one glowing orange.">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"claudepass","url":"https://claudepass.mehulmohan.com/","description":"Claude Code guest pass giveaway by Mehul Mohan. Odds: 1 in 10,000 ×3 → 20,000 ×3 → 50,000 ×3 → 100,000 ×3.","author":{"@type":"Person","name":"Mehul Mohan","url":"https://mehulmohan.com","sameAs":["https://x.com/mehulmpt","https://youtube.com/@mehulmpt","https://linkedin.com/in/mehulmpt","https://instagram.com/mehulmpt","https://github.com/mehulmpt","https://mehulmohan.com"]}}</script>
+<style>
+:root {
+	--bg: #0e0e11; --panel: #1b1b20; --line: #34343d; --line-soft: #2a2a31;
+	--text: #e6e6ea; --muted: #8a8a96; --dim: #5d5d68;
+	--lav: #a8a8f0; --orange: #d97757; --green: #7ec699; --red: #e2777a;
+	--mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+	--sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	color-scheme: dark;
+}
+* { box-sizing: border-box; }
+::selection { background: rgba(217, 119, 87, .38); color: #fff; }
+input::selection { background: rgba(217, 119, 87, .45); color: #fff; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--mono); }
+body { min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 24px 16px; }
+.wrap { width: min(720px, 100%); }
+.term {
+	width: 100%; background: var(--panel); border: 1px solid var(--line);
+	border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px -30px #000;
+}
+.body { padding: 28px 32px 24px; border-top: 2px solid var(--lav); margin: 0 0 0; }
+h1 { font-size: 18px; font-weight: 500; color: var(--lav); margin: 0; }
+.left { color: var(--muted); font-size: 16px; margin: 4px 0 0; min-height: 1.4em; }
+
+.tickets { display: flex; flex-wrap: wrap; gap: 20px; margin: 32px 0 28px; }
+.ticket {
+	position: relative; font: inherit; font-size: 17px; color: var(--text); background: transparent;
+	border: 1.5px solid #8b8b97; border-radius: 2px; padding: 14px 20px; cursor: pointer;
+	transition: transform .18s ease, border-color .18s ease, color .18s ease, opacity .3s ease;
+	white-space: pre; user-select: none;
+}
+/* notch the side borders so the box reads like the CLI ticket */
+.ticket::before, .ticket::after {
+	content: ""; position: absolute; top: 30%; bottom: 30%; width: 4px; background: var(--panel);
+}
+.ticket::before { left: -3px; } .ticket::after { right: -3px; }
+.ticket .star { color: var(--orange); display: inline-block; }
+.ticket .cut { color: var(--dim); }
+.ticket:hover:not(:disabled), .ticket.sel:not(:disabled) { border-color: var(--lav); transform: translateY(-2px); }
+.ticket:focus-visible { outline: 2px solid var(--lav); outline-offset: 4px; }
+.ticket:disabled { cursor: default; }
+.tickets.locked .ticket:not(.chosen) { opacity: .35; }
+.ticket.rolling { border-color: var(--lav); animation: jitter .12s steps(2) infinite; }
+.ticket.rolling .star { animation: spin 1s linear infinite; }
+.ticket.won { border-color: var(--orange); color: var(--orange); box-shadow: 0 0 0 4px #d977571f, 0 0 32px -6px #d97757aa; }
+.ticket.won .star { animation: pop .5s ease; }
+.ticket.lost { border-color: var(--dim); color: var(--dim); }
+.ticket.lost .star { color: var(--dim); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes jitter { 0% { transform: translate(-1px, -2px); } 100% { transform: translate(1px, -1px); } }
+@keyframes pop { 0% { transform: scale(.4); } 60% { transform: scale(1.6); } 100% { transform: scale(1); } }
+
+.out { font-size: 15px; line-height: 1.7; min-height: 3.4em; }
+.out p { margin: 0; }
+.out .ok { color: var(--green); } .out .bad { color: var(--red); } .out .warn { color: var(--orange); }
+.out .m { color: var(--muted); }
+.spin { color: var(--orange); display: inline-block; width: 1.4ch; }
+
+form { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line);
+	border-radius: 8px; padding: 10px 12px; background: #16161a; }
+form:focus-within { border-color: #4a4a58; }
+form .p { color: var(--lav); }
+input { flex: 1; min-width: 0; font: inherit; font-size: 15px; color: var(--text); background: transparent; border: 0; outline: 0; caret-color: var(--orange); }
+input::placeholder { color: var(--dim); }
+form button { font: inherit; font-size: 13px; background: var(--orange); color: #141414; border: 0; border-radius: 6px; padding: 7px 12px; cursor: pointer; font-weight: 600; }
+form button:disabled { opacity: .5; cursor: default; }
+
+.hint { margin: 0; align-self: end; padding-bottom: 2px; font-size: 14px; color: var(--muted); font-style: italic; }
+
+/* The hint, claim form and Turnstile share one fixed-height slot, so swapping between
+   them never changes the card's height (no layout shift). */
+.slot { display: grid; margin-top: 14px; min-height: 48px; }
+.slot > * { grid-area: 1 / 1; }
+.off { visibility: hidden; }
+
+/* Skeletons: same box size as the content that replaces them. */
+.sk {
+	display: inline-block; height: .85em; vertical-align: -.08em; border-radius: 4px;
+	background: linear-gradient(90deg, #25252c 25%, #34343e 50%, #25252c 75%) 0 0 / 300% 100%;
+	animation: sk 1.4s ease-in-out infinite;
+}
+@keyframes sk { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.sk.w-left { width: 6ch; }
+.sk.w-a { width: min(34ch, 80%); }
+.sk.w-b { width: min(22ch, 55%); }
+.sk.w-odds { width: 4.8em; }
+.sk.w-pulls { width: 8.5em; }
+.tickets.loading .ticket { color: transparent; border-color: #3a3a44; }
+.tickets.loading .ticket .star, .tickets.loading .ticket .cut { color: transparent; }
+.tickets.loading .ticket {
+	background: linear-gradient(90deg, transparent 25%, #ffffff0a 50%, transparent 75%) 0 0 / 300% 100%;
+	animation: sk 1.4s ease-in-out infinite;
+}
+.status {
+	display: flex; flex-wrap: wrap; gap: 6px 22px; padding: 12px 20px; border-top: 1px solid var(--line-soft);
+	color: var(--muted); font-size: 13px; font-family: var(--sans);
+}
+.status .dot { color: var(--green); }
+#pulls, #odds { transition: color .6s ease; }
+.bump { color: var(--lav); transition: none !important; }
+#ts { align-self: start; }
+#odds { display: inline-block; min-width: 8.3em; }
+#pulls { display: inline-block; min-width: 10em; }
+.meta { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; margin: 14px 0 0; padding: 0 6px; }
+.fine { color: var(--dim); font-size: 12px; line-height: 1.6; margin: 0; }
+.src {
+	display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+	font: 500 12.5px var(--sans); color: var(--text); text-decoration: none;
+	padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: #16161a;
+	transition: border-color .15s ease, color .15s ease;
+}
+.src:hover { border-color: var(--lav); color: var(--lav); }
+.src:focus-visible { outline: 2px solid var(--lav); outline-offset: 2px; }
+
+.board {
+	margin: 22px 0 0; padding: 14px 16px; border: 1px solid var(--line-soft); border-radius: 12px;
+	background: #141418;
+}
+.board h2 { margin: 0 0 8px; font: 500 13px var(--mono); color: var(--lav); display: flex; justify-content: space-between; }
+#board-count { color: var(--muted); font-weight: 400; }
+.sk.w-count { width: 3ch; }
+.board ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.board li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: baseline; font-size: 12.5px; }
+.board .rank { color: var(--orange); }
+.board .mail { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board time { color: var(--dim); font: 11.5px var(--sans); }
+.board .empty { display: block; color: var(--muted); font: 12.5px var(--sans); }
+.board li.new .mail { color: var(--green); }
+/* Wide screens: a small sidebar beside the card (absolute, so it never shifts layout). */
+@media (min-width: 1380px) {
+	.board {
+		position: absolute; top: var(--clawd-room); left: calc(100% + 20px); width: 300px; margin: 0;
+	}
+	.board li { font-size: 12px; }
+}
+
+.donors {
+	margin: 22px 0 0; padding: 16px 18px; border: 1px solid var(--line-soft); border-radius: 12px;
+	background: #141418;
+}
+.donors h2 { margin: 0 0 10px; font: 500 13px var(--mono); color: var(--lav); }
+.donors ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.donors li { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.donors li a { color: var(--text); text-decoration: none; min-width: 14ch; }
+.donors li a:hover { color: var(--orange); }
+.donors .stars { color: var(--orange); letter-spacing: 3px; flex: 1; }
+.donors .n { color: var(--muted); font-size: 13px; }
+.donors .add { margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--line-soft); font: 13px var(--sans); color: var(--muted); }
+.donors .add a { color: var(--orange); text-decoration: none; font-weight: 500; }
+.donors .add a:hover { text-decoration: underline; }
+
+.site {
+	display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+	margin-top: 28px; padding: 16px 6px 0; border-top: 1px solid var(--line-soft);
+	font-family: var(--sans); font-size: 13px; color: var(--muted);
+}
+.site .by { display: flex; align-items: center; gap: 8px; }
+.site .by .star { color: var(--orange); font-family: var(--mono); }
+.site .by a { color: var(--text); text-decoration: none; font-weight: 500; }
+.site .by a:hover { color: var(--orange); }
+.site .handle { color: var(--dim); }
+.social { display: flex; gap: 4px; }
+.social a {
+	display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px;
+	color: var(--muted); transition: color .15s ease, background .15s ease;
+}
+.social a:hover { color: var(--text); background: #ffffff0d; }
+.social a:focus-visible { outline: 2px solid var(--lav); outline-offset: 1px; }
+.legal { flex-basis: 100%; margin: 2px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--dim); }
+
+/* --- Clawd --- */
+.wrap {
+	/* Reserve room above the card so Clawd is never clipped by the top of the viewport
+	   (on phones the card sits right under the body padding). */
+	--clawd-w: 96px; --clawd-h: 66px; --clawd-room: calc(var(--clawd-h) - 16px);
+	position: relative; padding-top: var(--clawd-room);
+}
+.clawd {
+	position: absolute; top: var(--clawd-room); right: 34px; z-index: 2;
+	width: var(--clawd-w); height: var(--clawd-h);
+	transform: translateY(-100%); margin-top: 1px;
+	background: none; border: 0; padding: 0; cursor: pointer;
+}
+.clawd:focus-visible { outline: 2px solid var(--lav); outline-offset: 4px; border-radius: 6px; }
+.clawd svg { width: 100%; height: 100%; overflow: visible; shape-rendering: crispEdges; }
+.clawd .body, .clawd .arm, .clawd .legs { fill: var(--orange); }
+.clawd .shade { fill: #b45c3e; }
+.clawd .shades { fill: #2b2650; }
+.clawd .glint { fill: #fff; animation: glint 3.2s infinite; }
+.clawd .link { fill: #c08a22; }
+.clawd .logo { fill: var(--lav); }
+.clawd .chain { fill: #f2c14e; }
+.clawd .cap { fill: #26262e; }
+.clawd .brim { fill: #3a3a46; }
+.clawd g { transform-box: fill-box; transform-origin: center bottom; }
+/* idle: nods to the beat; the whole sprite moves as one so the feet never detach */
+.clawd .sprite { animation: nod 1.1s steps(2) infinite; }
+@keyframes nod { 0% { transform: translateY(0); } 50% { transform: translateY(.25px); } }
+@keyframes glint { 0%, 70%, 100% { opacity: .75; } 76% { opacity: 1; fill: #fffbe6; } }
+
+.clawd:hover .arm-r, .clawd.wave .arm-r { animation: wave .3s steps(2) 4; }
+@keyframes wave { 50% { transform: translateY(-1.5px); } }
+.clawd.hop .sprite { animation: hop .45s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes hop { 40% { transform: translateY(-2px); } }
+
+/* thinking: nods fast and taps its feet */
+.clawd.think .sprite { animation: nod .4s steps(2) infinite; }
+.clawd.think .leg-a { animation: tap .3s steps(1) infinite; }
+.clawd.think .leg-b { animation: tap .3s steps(1) infinite .15s; }
+.clawd.think .glint { animation: glint .8s infinite; }
+@keyframes tap { 50% { transform: translateY(-.5px) scaleY(.6); } }
+
+/* won: jumps, spins, arms up, chain flashing */
+.clawd.win svg { animation: spin360 1.6s ease-in-out infinite; }
+.clawd.win .sprite { animation: jump .8s cubic-bezier(.3, 1.5, .5, 1) infinite; }
+.clawd.win .arm { transform: translateY(-1.5px); }
+.clawd.win .chain { animation: bling .4s steps(2) infinite; }
+@keyframes jump { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-3px); } }
+@keyframes spin360 { 0%, 40% { transform: rotate(0); } 70%, 100% { transform: rotate(360deg); } }
+@keyframes bling { 50% { fill: #fff6c8; } }
+
+/* lost: slumps and the shades slide down */
+.clawd.sad .sprite { animation: none; transform: translateY(.4px); transition: transform .3s ease; }
+.clawd.sad .cap, .clawd.sad .logo, .clawd.sad .brim { transform: translateY(.5px); transition: transform .3s ease; }
+.clawd.sad .shades { transform: translateY(.6px); transition: transform .3s ease; }
+.clawd.sad .arm { transform: translateY(.6px); }
+
+/* --- winner celebration --- */
+.fx { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 50; }
+.flash {
+	position: fixed; inset: 0; pointer-events: none; z-index: 49;
+	background: radial-gradient(circle at 50% 45%, #fff 0%, #ffd9c9 18%, #d9775788 45%, transparent 75%);
+	animation: flash .7s ease-out forwards;
+}
+@keyframes flash { 0% { opacity: .95; } 100% { opacity: 0; } }
+.banner {
+	position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 51;
+}
+.banner span {
+	font: 700 clamp(44px, 11vw, 128px)/1 var(--mono); letter-spacing: -2px; color: var(--orange);
+	text-shadow: 0 0 24px #d97757cc, 0 0 80px #d9775799, 0 6px 0 #7a3a24;
+	animation: banner 2.8s cubic-bezier(.2, 1.6, .4, 1) forwards;
+}
+@keyframes banner {
+	0% { transform: scale(.1) rotate(-12deg); opacity: 0; }
+	14% { transform: scale(1.15) rotate(3deg); opacity: 1; }
+	22% { transform: scale(1) rotate(0); }
+	70% { transform: scale(1.04); opacity: 1; }
+	100% { transform: scale(1.5); opacity: 0; }
+}
+.term.shake { animation: shake .55s cubic-bezier(.36, .07, .19, .97); }
+@keyframes shake {
+	10%, 90% { transform: translate(-2px, 1px) rotate(-.3deg); }
+	20%, 80% { transform: translate(5px, -2px) rotate(.4deg); }
+	30%, 50%, 70% { transform: translate(-9px, 3px) rotate(-.6deg); }
+	40%, 60% { transform: translate(9px, -3px) rotate(.6deg); }
+}
+.ticket.won.party { animation: glow 1.1s ease-in-out infinite alternate; }
+@keyframes glow {
+	from { box-shadow: 0 0 0 4px #d977571f, 0 0 24px -6px #d97757aa; }
+	to { box-shadow: 0 0 0 8px #d9775733, 0 0 60px 4px #d97757cc; }
+}
+.out .test { color: var(--lav); font-size: 13px; }
+
+@media (max-width: 520px) {
+	.body { padding: 22px 18px 20px; }
+	.tickets { gap: 10px; flex-wrap: nowrap; }
+	.ticket { font-size: 13px; padding: 10px 10px; }
+	.site { justify-content: center; text-align: center; }
+	.legal { text-align: center; }
+	.wrap { --clawd-w: 76px; --clawd-h: 52px; }
+	.clawd { right: 20px; }
+}
+@media (max-width: 360px) {
+	body { padding: 24px 10px; }
+	.body { padding: 20px 14px 18px; }
+	.tickets { gap: 6px; }
+	.ticket { flex: 1 1 0; min-width: 0; font-size: 10.5px; padding: 9px 0; text-align: center; }
+	.wrap { --clawd-w: 68px; --clawd-h: 47px; }
+	.clawd { right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<button class="clawd" id="clawd" type="button" aria-label="Clawd, the Claude Code mascot" title="hi, I'm Clawd"><svg viewBox="0 0 16 11" aria-hidden="true"><g class="sprite">
+		<g class="legs leg-a"><rect x="3" y="9" width="1.04" height="1.04"/><rect x="10" y="9" width="1.04" height="1.04"/><rect x="3" y="10" width="1.04" height="1.04"/><rect x="10" y="10" width="1.04" height="1.04"/></g>
+		<g class="legs leg-b"><rect x="5" y="9" width="1.04" height="1.04"/><rect x="12" y="9" width="1.04" height="1.04"/><rect x="5" y="10" width="1.04" height="1.04"/><rect x="12" y="10" width="1.04" height="1.04"/></g>
+		<g class="up">
+			<g class="body"><rect x="2" y="2" width="1.04" height="1.04"/><rect x="3" y="2" width="1.04" height="1.04"/><rect x="4" y="2" width="1.04" height="1.04"/><rect x="5" y="2" width="1.04" height="1.04"/><rect x="6" y="2" width="1.04" height="1.04"/><rect x="7" y="2" width="1.04" height="1.04"/><rect x="8" y="2" width="1.04" height="1.04"/><rect x="9" y="2" width="1.04" height="1.04"/><rect x="10" y="2" width="1.04" height="1.04"/><rect x="11" y="2" width="1.04" height="1.04"/><rect x="12" y="2" width="1.04" height="1.04"/><rect x="13" y="2" width="1.04" height="1.04"/><rect x="2" y="4" width="1.04" height="1.04"/><rect x="7" y="4" width="1.04" height="1.04"/><rect x="8" y="4" width="1.04" height="1.04"/><rect x="13" y="4" width="1.04" height="1.04"/><rect x="2" y="5" width="1.04" height="1.04"/><rect x="3" y="5" width="1.04" height="1.04"/><rect x="6" y="5" width="1.04" height="1.04"/><rect x="7" y="5" width="1.04" height="1.04"/><rect x="8" y="5" width="1.04" height="1.04"/><rect x="9" y="5" width="1.04" height="1.04"/><rect x="12" y="5" width="1.04" height="1.04"/><rect x="13" y="5" width="1.04" height="1.04"/><rect x="2" y="6" width="1.04" height="1.04"/><rect x="3" y="6" width="1.04" height="1.04"/><rect x="5" y="6" width="1.04" height="1.04"/><rect x="6" y="6" width="1.04" height="1.04"/><rect x="7" y="6" width="1.04" height="1.04"/><rect x="8" y="6" width="1.04" height="1.04"/><rect x="9" y="6" width="1.04" height="1.04"/><rect x="10" y="6" width="1.04" height="1.04"/><rect x="12" y="6" width="1.04" height="1.04"/><rect x="13" y="6" width="1.04" height="1.04"/><rect x="2" y="7" width="1.04" height="1.04"/><rect x="3" y="7" width="1.04" height="1.04"/><rect x="4" y="7" width="1.04" height="1.04"/><rect x="11" y="7" width="1.04" height="1.04"/><rect x="12" y="7" width="1.04" height="1.04"/><rect x="13" y="7" width="1.04" height="1.04"/></g>
+			<g class="shade"><rect x="2" y="8" width="1.04" height="1.04"/><rect x="3" y="8" width="1.04" height="1.04"/><rect x="4" y="8" width="1.04" height="1.04"/><rect x="5" y="8" width="1.04" height="1.04"/><rect x="6" y="8" width="1.04" height="1.04"/><rect x="9" y="8" width="1.04" height="1.04"/><rect x="10" y="8" width="1.04" height="1.04"/><rect x="11" y="8" width="1.04" height="1.04"/><rect x="12" y="8" width="1.04" height="1.04"/><rect x="13" y="8" width="1.04" height="1.04"/></g>
+			<g class="arm arm-l"><rect x="1" y="5" width="1.04" height="1.04"/></g>
+			<g class="arm arm-r"><rect x="14" y="5" width="1.04" height="1.04"/></g>
+			<g class="chain"><rect x="4" y="6" width="1.04" height="1.04"/><rect x="11" y="6" width="1.04" height="1.04"/><rect x="6" y="7" width="1.04" height="1.04"/><rect x="9" y="7" width="1.04" height="1.04"/><rect x="7" y="8" width="1.04" height="1.04"/><rect x="8" y="8" width="1.04" height="1.04"/><g class="link"><rect x="5" y="7" width="1.04" height="1.04"/><rect x="7" y="7" width="1.04" height="1.04"/><rect x="8" y="7" width="1.04" height="1.04"/><rect x="10" y="7" width="1.04" height="1.04"/></g></g>
+			<g class="cap"><rect x="4" y="0" width="1.04" height="1.04"/><rect x="5" y="0" width="1.04" height="1.04"/><rect x="6" y="0" width="1.04" height="1.04"/><rect x="7" y="0" width="1.04" height="1.04"/><rect x="8" y="0" width="1.04" height="1.04"/><rect x="9" y="0" width="1.04" height="1.04"/><rect x="3" y="1" width="1.04" height="1.04"/><rect x="4" y="1" width="1.04" height="1.04"/><rect x="5" y="1" width="1.04" height="1.04"/><rect x="7" y="1" width="1.04" height="1.04"/><rect x="8" y="1" width="1.04" height="1.04"/><rect x="9" y="1" width="1.04" height="1.04"/><rect x="10" y="1" width="1.04" height="1.04"/></g>
+			<g class="logo"><rect x="6" y="1" width="1.04" height="1.04"/></g>
+			<g class="brim"><rect x="11" y="1" width="1.04" height="1.04"/><rect x="12" y="1" width="1.04" height="1.04"/><rect x="13" y="1" width="1.04" height="1.04"/><rect x="14" y="1" width="1.04" height="1.04"/></g>
+			<g class="shades"><rect x="1" y="3" width="1.04" height="1.04"/><rect x="2" y="3" width="1.04" height="1.04"/><rect x="3" y="3" width="1.04" height="1.04"/><rect x="4" y="3" width="1.04" height="1.04"/><rect x="5" y="3" width="1.04" height="1.04"/><rect x="6" y="3" width="1.04" height="1.04"/><rect x="7" y="3" width="1.04" height="1.04"/><rect x="8" y="3" width="1.04" height="1.04"/><rect x="9" y="3" width="1.04" height="1.04"/><rect x="10" y="3" width="1.04" height="1.04"/><rect x="11" y="3" width="1.04" height="1.04"/><rect x="12" y="3" width="1.04" height="1.04"/><rect x="13" y="3" width="1.04" height="1.04"/><rect x="14" y="3" width="1.04" height="1.04"/><rect x="3" y="4" width="1.04" height="1.04"/><rect x="5" y="4" width="1.04" height="1.04"/><rect x="6" y="4" width="1.04" height="1.04"/><rect x="9" y="4" width="1.04" height="1.04"/><rect x="11" y="4" width="1.04" height="1.04"/><rect x="12" y="4" width="1.04" height="1.04"/><rect x="4" y="5" width="1.04" height="1.04"/><rect x="5" y="5" width="1.04" height="1.04"/><rect x="10" y="5" width="1.04" height="1.04"/><rect x="11" y="5" width="1.04" height="1.04"/><g class="glint"><rect x="4" y="4" width="1.04" height="1.04"/><rect x="10" y="4" width="1.04" height="1.04"/></g></g>
+		</g>
+	</g></svg></button>
+<main class="term">
+	<section class="body">
+		<h1>Guest passes</h1>
+		<p class="left" id="left"><span class="sk w-left"></span></p>
+
+		<div class="tickets loading" id="tickets" role="radiogroup" aria-label="Pick a ticket">
+			<button class="ticket" data-i="0" role="radio" aria-checked="false" disabled>) CC <span class="star">✻</span> <span class="cut">┆</span> (</button>
+			<button class="ticket" data-i="1" role="radio" aria-checked="false" disabled>) CC <span class="star">✻</span> <span class="cut">┆</span> (</button>
+			<button class="ticket" data-i="2" role="radio" aria-checked="false" disabled>) CC <span class="star">✻</span> <span class="cut">┆</span> (</button>
+		</div>
+
+		<div class="out" id="out" aria-live="polite"><p><span class="sk w-a"></span></p><p><span class="sk w-b"></span></p></div>
+		<div class="slot">
+			<p class="hint off" id="hint">← → to pick · Enter to pull · one pull every 3s</p>
+			<form id="claim" class="off" autocomplete="on">
+				<span class="p">&gt;</span>
+				<input id="email" type="email" name="email" placeholder="you@example.com" required autocomplete="email" spellcheck="false">
+				<button type="submit" id="send">Claim</button>
+			</form>
+			<div id="ts"></div>
+		</div>
+	</section>
+	<div class="status">
+		<span>⌂ claudepass.mehulmohan.com</span>
+		<span id="odds">⚄ odds <span class="sk w-odds"></span></span>
+		<span><span class="dot">●</span> 1 pull / 3s / network</span>
+		<span id="pulls">⟳ <span class="sk w-pulls"></span></span>
+	</div>
+</main>
+<div class="meta">
+	<p class="fine">Odds: 1 in 10,000 ×3 → 20,000 ×3 → 50,000 ×3 → 100,000 ×3. Winners get their pass by email.</p>
+	<a class="src" href="https://github.com/mehulmpt/claudepass" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 6 2 12l6 6M16 6l6 6-6 6"/></svg>View source code</a>
+</div>
+
+<aside class="board" aria-labelledby="board-title">
+	<h2 id="board-title">Winners <span id="board-count"><span class="sk w-count"></span></span></h2>
+	<ol id="board-list"><li class="empty">No winners yet. Could be you.</li></ol>
+</aside>
+
+<section class="donors" aria-labelledby="donors-title">
+	<h2 id="donors-title">Passes shared by</h2>
+	<ul><li><a href="https://x.com/mehulmpt" target="_blank" rel="noopener noreferrer">@mehulmpt</a><span class="stars" aria-hidden="true">✻✻✻</span><span class="n">3 passes</span></li><li><a href="https://x.com/YashSolanki_" target="_blank" rel="noopener noreferrer">@YashSolanki_</a><span class="stars" aria-hidden="true">✻✻✻</span><span class="n">3 passes</span></li><li><a href="https://x.com/MaheshBauti" target="_blank" rel="noopener noreferrer">@MaheshBauti</a><span class="stars" aria-hidden="true">✻✻✻</span><span class="n">3 passes</span></li><li><a href="https://x.com/BhagyaMudgal" target="_blank" rel="noopener noreferrer">@BhagyaMudgal</a><span class="stars" aria-hidden="true">✻✻✻</span><span class="n">3 passes</span></li></ul>
+	<p class="add">Got Claude Code passes to share? <a href="https://x.com/mehulmpt" target="_blank" rel="noopener noreferrer">DM @mehulmpt on X</a> to add yours.</p>
+</section>
+
+<footer class="site">
+	<div class="by">
+		<span class="star">✻</span>
+		<span>made by <a href="https://x.com/mehulmpt" target="_blank" rel="noopener noreferrer">Mehul Mohan</a></span>
+		<span class="handle">@mehulmpt</span>
+	</div>
+	<nav class="social" aria-label="Mehul on social media">
+		<a href="https://x.com/mehulmpt" target="_blank" rel="noopener noreferrer" aria-label="X" title="X"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a>
+			<a href="https://youtube.com/@mehulmpt" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+			<a href="https://linkedin.com/in/mehulmpt" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+			<a href="https://instagram.com/mehulmpt" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/></g><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a>
+			<a href="https://github.com/mehulmpt" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+			<a href="https://mehulmohan.com" target="_blank" rel="noopener noreferrer" aria-label="Website" title="Website"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M2 12h20"/></g></svg></a>
+	</nav>
+	<p class="legal">Free to enter. Not affiliated with Anthropic. Claude is a trademark of Anthropic, PBC, and Clawd is Anthropic's mascot.</p>
+</footer>
+</div>
+
+<script>
+(() => {
+	const SITE_KEY = "0x4AAAAAAGTCTKlBQ9uJLIpN";
+	const $ = (id) => document.getElementById(id);
+	const tickets = [...document.querySelectorAll(".ticket")];
+	const out = $("out"), form = $("claim"), emailIn = $("email"), sendBtn = $("send"), hint = $("hint");
+	let skew = 0;          // server clock - client clock, seconds
+	let sel = 1;
+	let busy = false;
+	let timer = null;
+	let claimToken = null;
+
+	const clawd = $("clawd");
+	let moodTimer = null;
+	function mood({ state, ms = 0 }) {
+		clearTimeout(moodTimer);
+		clawd.classList.remove("think", "win", "sad", "hop", "wave");
+		if (state) clawd.classList.add(state);
+		if (state && ms) moodTimer = setTimeout(() => clawd.classList.remove(state), ms);
+	}
+	clawd.addEventListener("click", () => {
+		if (clawd.classList.contains("think") || clawd.classList.contains("win")) return;
+		mood({ state: "hop", ms: 500 });
+	});
+
+	const serverNow = () => Date.now() / 1000 + skew;
+	const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+	const line = ({ cls, text }) => { const p = document.createElement("p"); if (cls) p.className = cls; p.textContent = text; return p; };
+	const say = (lines) => { out.replaceChildren(...lines); };
+
+	function setLeft(n) {
+		$("left").textContent = n === 0 ? "none left" : n + " left";
+	}
+
+	function enable(on) {
+		tickets.forEach((t) => (t.disabled = !on));
+		hint.classList.toggle("off", !on);
+		if (on) select({ i: sel, focus: false });
+	}
+	function select({ i, focus = true }) {
+		sel = (i + tickets.length) % tickets.length;
+		tickets.forEach((t, j) => { t.classList.toggle("sel", j === sel); t.setAttribute("aria-checked", j === sel); });
+		if (focus) tickets[sel].focus();
+	}
+
+	function countdown({ until, render, done }) {
+		clearInterval(timer);
+		const tick = () => {
+			const left = until - serverNow();
+			if (left <= 0) { clearInterval(timer); done(); return; }
+			render(fmt(left));
+		};
+		tick();
+		timer = setInterval(tick, 250);
+	}
+
+	function cooldown({ nextPlayAt, lead = [] }) {
+		enable(false);
+		const p = line({ cls: "m", text: "" });
+		say([...lead, p]);
+		countdown({ until: nextPlayAt, render: (t) => (p.textContent = "Next pull in " + t + "."), done: reset });
+	}
+
+	function reset() {
+		tickets.forEach((t) => t.classList.remove("chosen", "won", "lost", "rolling"));
+		$("tickets").classList.remove("locked");
+		say([line({ cls: "m", text: "Pick a ticket and test your luck." })]);
+		enable(true);
+	}
+
+	// --- Turnstile ---------------------------------------------------------
+	let widget = null, pending = null;
+	window.onTurnstile = () => {
+		widget = turnstile.render("#ts", {
+			sitekey: SITE_KEY, action: "play", execution: "execute", appearance: "interaction-only", theme: "dark",
+			callback: (tok) => { pending && pending.resolve(tok); pending = null; },
+			"error-callback": () => { pending && pending.reject(new Error("bot check failed")); pending = null; },
+			"expired-callback": () => turnstile.reset(widget),
+		});
+	};
+	function humanToken() {
+		return new Promise((resolve, reject) => {
+			if (!window.turnstile || widget === null) return reject(new Error("bot check still loading"));
+			pending = { resolve, reject };
+			turnstile.reset(widget);
+			turnstile.execute(widget);
+		});
+	}
+
+	// --- API -----------------------------------------------------------------
+	async function api({ path, body }) {
+		const res = await fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+		const data = await res.json().catch(() => ({}));
+		if (typeof data.now === "number") skew = data.now - Date.now() / 1000;
+		return { status: res.status, data };
+	}
+
+	const VERBS = ["Shuffling", "Rummaging", "Consulting the RNG", "Peeking", "Unfolding", "Squinting", "Deliberating", "Tearing the perforation"];
+	const FRAMES = ["·", "✢", "✳", "✶", "✻", "✽", "✻", "✶", "✳", "✢"];
+	function spinner() {
+		const p = document.createElement("p");
+		const s = document.createElement("span"); s.className = "spin";
+		const v = document.createElement("span"); v.className = "warn";
+		p.append(s, v);
+		say([p]);
+		let f = 0, k = Math.floor(Math.random() * VERBS.length);
+		const id = setInterval(() => {
+			s.textContent = FRAMES[f++ % FRAMES.length];
+			if (f % 9 === 0) k++;
+			v.textContent = VERBS[k % VERBS.length] + "…";
+		}, 110);
+		s.textContent = FRAMES[0]; v.textContent = VERBS[k % VERBS.length] + "…";
+		return () => clearInterval(id);
+	}
+	const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+	// --- winner celebration -------------------------------------------------
+	function celebrate({ from }) {
+		const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const amount = reduce ? 0.15 : 1;
+		const COLORS = ["#d97757", "#a8a8f0", "#7ec699", "#f5c46b", "#ef8fb5", "#ffffff", "#7fd3f0"];
+		const rand = (a, b) => a + Math.random() * (b - a);
+		const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+		const cv = document.createElement("canvas");
+		cv.className = "fx";
+		document.body.append(cv);
+		const g = cv.getContext("2d");
+		let W = 0, H = 0;
+		const resize = () => {
+			const dpr = Math.min(2, window.devicePixelRatio || 1);
+			W = innerWidth; H = innerHeight;
+			cv.width = W * dpr; cv.height = H * dpr;
+			g.setTransform(dpr, 0, 0, dpr, 0, 0);
+		};
+		resize();
+		addEventListener("resize", resize);
+
+		const P = [];
+		const paper = ({ x, y, vx, vy, gravity = 0.24, life }) => P.push({
+			kind: pick(["rect", "rect", "rect", "circle", "star", "ribbon"]),
+			x, y, vx, vy, gravity, drag: 0.986,
+			rot: rand(0, 6.28), vr: rand(-0.3, 0.3), tilt: rand(0, 6.28), vt: rand(0.06, 0.24),
+			size: rand(5, 11), color: pick(COLORS), age: 0, life: life || rand(240, 380),
+		});
+
+		function burst({ x, y, angle, spread, speed, count }) {
+			for (let i = 0; i < count * amount; i++) {
+				const a = angle + rand(-spread, spread);
+				const v = speed * rand(0.45, 1.15);
+				paper({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v });
+			}
+		}
+		function rain({ count }) {
+			for (let i = 0; i < count * amount; i++) {
+				paper({ x: rand(0, W), y: rand(-H * 0.7, -10), vx: rand(-1.5, 1.5), vy: rand(1, 3.5), gravity: 0.06, life: 700 });
+			}
+		}
+		function rocket() {
+			P.push({
+				kind: "rocket", x: rand(W * 0.12, W * 0.88), y: H + 10, vx: rand(-1.2, 1.2), vy: -rand(H / 62, H / 48),
+				gravity: 0.2, drag: 0.996, color: pick(COLORS), age: 0, life: 260, size: 3, px: 0, py: 0,
+			});
+		}
+		function sparks({ x, y, color }) {
+			const n = Math.round(80 * amount) + 6;
+			for (let i = 0; i < n; i++) {
+				const a = (i / n) * 6.283 + rand(-0.06, 0.06);
+				const v = rand(2, 8);
+				P.push({
+					kind: "spark", x, y, px: x, py: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, gravity: 0.07, drag: 0.968,
+					color: Math.random() < 0.3 ? "#ffffff" : color, age: 0, life: rand(55, 95), size: rand(1.4, 2.8),
+				});
+			}
+			burst({ x, y, angle: -1.57, spread: 3.14, speed: 6, count: 14 });
+		}
+
+		// Choreography.
+		const r = from.getBoundingClientRect();
+		const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+		const flash = document.createElement("div"); flash.className = "flash"; document.body.append(flash);
+		const banner = document.createElement("div"); banner.className = "banner";
+		const word = document.createElement("span"); word.textContent = "✻ WINNER ✻"; banner.append(word);
+		document.body.append(banner);
+		setTimeout(() => { flash.remove(); }, 800);
+		setTimeout(() => { banner.remove(); }, 2900);
+		if (!reduce) {
+			document.querySelector(".term").classList.add("shake");
+			setTimeout(() => document.querySelector(".term").classList.remove("shake"), 600);
+		}
+		from.classList.add("party");
+		if (navigator.vibrate) navigator.vibrate([90, 40, 90, 40, 220]);
+
+		burst({ x: cx, y: cy, angle: -1.57, spread: 3.14, speed: 17, count: 180 });
+		const cannons = (k) => {
+			burst({ x: 0, y: H, angle: -1.0, spread: 0.32, speed: 24 * k, count: 140 * k });
+			burst({ x: W, y: H, angle: -2.14, spread: 0.32, speed: 24 * k, count: 140 * k });
+		};
+		cannons(1);
+		[350, 700, 1050, 1500].forEach((ms, i) => setTimeout(() => cannons(1 - i * 0.18), ms));
+		for (let i = 0; i < 11; i++) setTimeout(rocket, 250 + i * 260 + rand(0, 140));
+		setTimeout(() => rain({ count: 260 }), 900);
+		setTimeout(() => rain({ count: 220 }), 2100);
+		setTimeout(() => burst({ x: cx, y: cy, angle: -1.57, spread: 3.14, speed: 13, count: 120 }), 1800);
+
+		// Physics + rendering.
+		let last = performance.now(), started = last;
+		function frame(nowMs) {
+			const dt = Math.min(2.5, (nowMs - last) / 16.67);
+			last = nowMs;
+			g.clearRect(0, 0, W, H);
+			for (let i = P.length - 1; i >= 0; i--) {
+				const p = P[i];
+				p.age += dt;
+				p.px = p.x; p.py = p.y;
+				p.vx *= Math.pow(p.drag, dt);
+				p.vy = p.vy * Math.pow(p.drag, dt) + p.gravity * dt;
+				p.x += p.vx * dt; p.y += p.vy * dt;
+				if (p.kind === "rocket" && p.vy > -1.5) { sparks({ x: p.x, y: p.y, color: p.color }); P.splice(i, 1); continue; }
+				if (p.age > p.life || p.y > H + 60 || p.x < -80 || p.x > W + 80) { P.splice(i, 1); continue; }
+				const fade = Math.min(1, (p.life - p.age) / (p.life * 0.25));
+				g.globalAlpha = Math.max(0, fade);
+				if (p.kind === "spark" || p.kind === "rocket") {
+					g.strokeStyle = p.color; g.lineWidth = p.size; g.lineCap = "round";
+					g.beginPath(); g.moveTo(p.px - p.vx * 1.5, p.py - p.vy * 1.5); g.lineTo(p.x, p.y); g.stroke();
+					continue;
+				}
+				p.rot += p.vr * dt; p.tilt += p.vt * dt;
+				g.save();
+				g.translate(p.x, p.y); g.rotate(p.rot); g.scale(1, Math.cos(p.tilt));
+				g.fillStyle = p.color;
+				if (p.kind === "rect") g.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+				else if (p.kind === "circle") { g.beginPath(); g.arc(0, 0, p.size / 2.6, 0, 6.283); g.fill(); }
+				else if (p.kind === "ribbon") g.fillRect(-p.size * 1.3, -1.2, p.size * 2.6, 2.4);
+				else { g.font = (p.size * 2.2) + "px ui-monospace, Menlo, monospace"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("✻", 0, 0); }
+				g.restore();
+			}
+			g.globalAlpha = 1;
+			if (P.length > 0 || nowMs - started < 3500) requestAnimationFrame(frame);
+			else { cv.remove(); removeEventListener("resize", resize); }
+		}
+		requestAnimationFrame(frame);
+	}
+
+	async function pull(i) {
+		if (busy) return;
+		busy = true;
+		select({ i, focus: false });
+		enable(false);
+		const t = tickets[i];
+		t.classList.add("chosen", "rolling");
+		$("tickets").classList.add("locked");
+		const stop = spinner();
+		mood({ state: "think" });
+
+		let res;
+		try {
+			const tok = await humanToken();
+			[res] = await Promise.all([api({ path: "/api/play", body: { turnstile: tok } }), sleep(1800)]);
+		} catch (e) {
+			res = { status: 0, data: { error: e.message || "Network error." } };
+		}
+		stop();
+		refreshStatus();
+		t.classList.remove("rolling");
+		busy = false;
+		const d = res.data;
+
+		if (res.status === 200 && d.won) {
+			t.classList.add("won");
+			claimToken = d.token;
+			sessionStorage.setItem("claim", JSON.stringify({ token: d.token, expiresAt: d.expiresAt - skew, test: !!d.test }));
+			showClaim({ expiresAt: d.expiresAt, test: !!d.test });
+			celebrate({ from: t });
+			mood({ state: "win" });
+			return;
+		}
+		if (res.status === 200) {
+			t.classList.add("lost");
+			t.innerHTML = ") -- <span class=\"star\">✻</span> <span class=\"cut\">┆</span> (";
+			setLeft(d.remaining);
+			mood({ state: "sad", ms: 3200 });
+			cooldown({ nextPlayAt: d.nextPlayAt, lead: [line({ cls: "bad", text: "✗ Empty ticket. No pass this time." })] });
+			return;
+		}
+		if (!(res.status === 200)) mood({ state: null });
+		if (res.status === 429 && d.nextPlayAt) return cooldown({ nextPlayAt: d.nextPlayAt, lead: [line({ cls: "bad", text: "✗ Too fast. One pull every 3 seconds." })] });
+		if (res.status === 410) return soldOut();
+		t.classList.remove("chosen");
+		$("tickets").classList.remove("locked");
+		say([line({ cls: "bad", text: "✗ " + (d.message || d.error || "Something went wrong.") }), line({ cls: "m", text: "Try again in a moment." })]);
+		enable(true);
+	}
+
+	function showClaim({ expiresAt, test }) {
+		enable(false);
+		const p = line({ cls: "m", text: "" });
+		const lines = [line({ cls: "ok", text: "✓ It's a pass. One free week of Claude Code is yours." }), p];
+		if (test) lines.push(line({ cls: "test", text: "◇ test mode: nothing is saved and no pass is used" }));
+		say(lines);
+		form.classList.remove("off");
+		emailIn.focus();
+		countdown({
+			until: expiresAt,
+			render: (t) => (p.textContent = "Enter your email within " + t + ". Mehul sends your pass here; it shows masked on the winners board."),
+			done: () => {
+				form.classList.add("off");
+				sessionStorage.removeItem("claim");
+				say([line({ cls: "bad", text: "✗ Time's up. The pass went back into the pool." })]);
+				refreshStatus();
+			},
+		});
+	}
+
+	form.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		if (!claimToken) return;
+		sendBtn.disabled = true; sendBtn.textContent = "Claiming…";
+		const { status, data } = await api({ path: "/api/claim", body: { token: claimToken, email: emailIn.value } }).catch(() => ({ status: 0, data: {} }));
+		sendBtn.disabled = false; sendBtn.textContent = "Claim";
+		if (status === 200) {
+			clearInterval(timer);
+			form.classList.add("off");
+			sessionStorage.removeItem("claim");
+			claimToken = null;
+			say([
+				line({ cls: "ok", text: "✓ Claimed for " + emailIn.value.trim() + ". You're on the winners board." }),
+				line({ cls: "m", text: "A confirmation is on its way from giveaway@mehulmohan.com (check spam). Mehul will email you the pass personally." }),
+			]);
+			refreshStatus();
+			return;
+		}
+		const prev = out.querySelector(".bad"); if (prev) prev.remove();
+		out.append(line({ cls: "bad", text: "✗ " + (data.message || data.error || "Couldn't send. Try again.") }));
+		if (status === 410 || status === 409 && /already claimed/.test(data.error || "")) { form.classList.add("off"); clearInterval(timer); sessionStorage.removeItem("claim"); }
+	});
+
+	function soldOut() {
+		enable(false);
+		$("tickets").classList.add("locked");
+		setLeft(0);
+		say([line({ cls: "warn", text: "All passes have been claimed. Thanks for playing." })]);
+	}
+
+	function bump(el) {
+		el.classList.add("bump");
+		requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove("bump")));
+	}
+
+	let lastPulls = null;
+	function showPulls(n) {
+		if (typeof n !== "number") return;
+		$("pulls").textContent = "⟳ " + n.toLocaleString("en-US") + (n === 1 ? " pull" : " pulls") + " so far";
+		if (lastPulls !== null && n !== lastPulls) bump($("pulls"));
+		lastPulls = n;
+	}
+
+	function ago(at) {
+		const s = Math.max(0, serverNow() - at);
+		if (s < 60) return "just now";
+		if (s < 3600) return Math.floor(s / 60) + "m ago";
+		if (s < 86400) return Math.floor(s / 3600) + "h ago";
+		return Math.floor(s / 86400) + "d ago";
+	}
+
+	let shownWinners = null;
+	function showWinners({ list, total }) {
+		if (!Array.isArray(list)) return;
+		$("board-count").textContent = list.length + "/" + (total ?? "?");
+		const ol = $("board-list");
+		if (list.length === 0) {
+			const li = document.createElement("li"); li.className = "empty"; li.textContent = "No winners yet. Could be you.";
+			ol.replaceChildren(li);
+		} else {
+			ol.replaceChildren(...list.map((w, i) => {
+				const li = document.createElement("li");
+				if (shownWinners !== null && i >= shownWinners) li.className = "new";
+				const rank = document.createElement("span"); rank.className = "rank"; rank.textContent = "✻" + (i + 1);
+				const mail = document.createElement("span"); mail.className = "mail"; mail.textContent = w.email; mail.title = w.email;
+				const time = document.createElement("time"); time.textContent = ago(w.at);
+				li.append(rank, mail, time);
+				return li;
+			}));
+		}
+		shownWinners = list.length;
+	}
+
+	function showOdds(oneIn) {
+		if (typeof oneIn === "number") $("odds").textContent = "⚄ odds 1 in " + oneIn.toLocaleString("en-US");
+	}
+
+	async function refreshStatus() {
+		const { data } = await api({ path: "/api/status" });
+		if (typeof data.remaining === "number") setLeft(data.remaining);
+		showOdds(data.oddsOneIn);
+		showPulls(data.pulls);
+		showWinners({ list: data.winners, total: data.total });
+	}
+
+	// --- live counters ---------------------------------------------------------
+	// Poll the edge-cached stats while the tab is visible. No clock data here: the
+	// cached response can be a few seconds old.
+	async function pollStats() {
+		if (document.hidden) return;
+		const { status, data } = await api({ path: "/api/stats" }).catch(() => ({ status: 0, data: {} }));
+		if (status !== 200) return;
+		showPulls(data.pulls);
+		showOdds(data.oddsOneIn);
+		showWinners({ list: data.winners, total: data.total });
+		if (typeof data.remaining === "number") setLeft(data.remaining);
+		if (data.remaining === 0 && !busy && !claimToken) soldOut();
+	}
+	setInterval(pollStats, 10000);
+	document.addEventListener("visibilitychange", () => { if (!document.hidden) pollStats(); });
+
+	// --- keyboard ------------------------------------------------------------
+	tickets.forEach((t, i) => t.addEventListener("click", () => pull(i)));
+	document.addEventListener("keydown", (e) => {
+		if (e.target === emailIn || tickets[0].disabled) return;
+		if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); select({ i: sel + 1 }); }
+		else if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); select({ i: sel - 1 }); }
+		else if (e.key === "Enter" && !tickets.includes(document.activeElement)) { e.preventDefault(); pull(sel); }
+	});
+
+	// --- boot ----------------------------------------------------------------
+	(async () => {
+		const { status, data } = await api({ path: "/api/status" }).catch(() => ({ status: 0, data: {} }));
+		$("tickets").classList.remove("loading");
+		if (status !== 200) {
+			$("left").textContent = "—";
+			$("odds").textContent = "⚄ odds —";
+			$("pulls").textContent = "⟳ —";
+			$("board-count").textContent = "";
+			say([line({ cls: "bad", text: "✗ " + (data.message || "Couldn't reach the server.") }), line({ cls: "m", text: "Reload the page in a minute." })]);
+			return;
+		}
+		showOdds(data.oddsOneIn);
+		showPulls(data.pulls);
+		showWinners({ list: data.winners, total: data.total });
+		setLeft(data.remaining ?? 0);
+
+		const saved = JSON.parse(sessionStorage.getItem("claim") || "null");
+		if (saved && saved.expiresAt + skew > serverNow()) {
+			claimToken = saved.token;
+			tickets[sel].classList.add("chosen", "won");
+			$("tickets").classList.add("locked");
+			return showClaim({ expiresAt: saved.expiresAt + skew, test: !!saved.test });
+		}
+		sessionStorage.removeItem("claim");
+
+		if (!data.open) { say([line({ cls: "m", text: "The giveaway isn't open yet. Check back soon." })]); return; }
+		if (data.remaining === 0) return soldOut();
+		if (data.nextPlayAt) return cooldown({ nextPlayAt: data.nextPlayAt, lead: [line({ cls: "m", text: "One pull every 3 seconds." })] });
+		reset();
+		mood({ state: "wave", ms: 1000 });
+	})();
+})();
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstile" async defer></script>
+</body>
+</html>

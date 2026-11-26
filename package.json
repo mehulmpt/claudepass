@@ -10,11 +10,13 @@
 		"format:check": "prettier --check .",
 		"test": "vp test --run",
 		"typecheck": "cf workers types && vp check --no-fmt --no-lint",
-		"check": "pnpm typecheck && pnpm format:check && pnpm test"
+		"check": "pnpm typecheck && pnpm format:check && pnpm test",
+		"render:page": "node scripts/render-page.ts"
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "2.0.0-rc.1",
 		"@cloudflare/vitest-plugin": "1.8.4",
+		"@types/node": "26.6.6",
 		"cf": "1.0.0-rc.1",
 		"prettier": "3.10.1",
 		"typescript": "7.0.2",
