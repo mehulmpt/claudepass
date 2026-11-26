@@ -5,7 +5,7 @@
  */
 
 /** Total passes in the pool. */
-export const TOTAL_PASSES = 18
+export const TOTAL_PASSES = 21
 
 /**
  * "1 in N" odds for each pass in order (1st, 2nd, ...). Every pass is 1 in 1,000;

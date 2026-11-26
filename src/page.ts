@@ -108,6 +108,7 @@ export const DONORS = [
 	{ handle: 'BhagyaMudgal', passes: 3 },
 	{ handle: 'sachingurjar_4', passes: 3 },
 	{ handle: 'mohittwwt', passes: 3 },
+	{ handle: 'deveshb15', passes: 3 },
 ]
 
 /** "@a, @b and @c" */

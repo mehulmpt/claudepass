@@ -1,6 +1,6 @@
 # claudepass
 
-18 Claude Code guest passes (1 free week each), shared by [@mehulmpt](https://x.com/mehulmpt), [@YashSolanki_](https://x.com/YashSolanki_), [@MaheshBauti](https://x.com/MaheshBauti), [@BhagyaMudgal](https://x.com/BhagyaMudgal), [@sachingurjar_4](https://x.com/sachingurjar_4) and [@mohittwwt](https://x.com/mohittwwt). Live at **[claudepass.mehulmohan.com](https://claudepass.mehulmohan.com)**.
+21 Claude Code guest passes (1 free week each), shared by [@mehulmpt](https://x.com/mehulmpt), [@YashSolanki_](https://x.com/YashSolanki_), [@MaheshBauti](https://x.com/MaheshBauti), [@BhagyaMudgal](https://x.com/BhagyaMudgal), [@sachingurjar_4](https://x.com/sachingurjar_4), [@mohittwwt](https://x.com/mohittwwt) and [@deveshb15](https://x.com/deveshb15). Live at **[claudepass.mehulmohan.com](https://claudepass.mehulmohan.com)**.
 
 Pick a ticket and the server draws. Win, and you have 5 minutes to leave your email.
 
