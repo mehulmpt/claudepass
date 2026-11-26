@@ -29,10 +29,10 @@ export default defineConfig({
 			}),
 
 			// Tunables. Each IP (IPv6: per /64) gets one play per cooldown.
-			TOTAL_PASSES: bindings.text('9'),
+			TOTAL_PASSES: bindings.text('12'),
 			// "1 in N" odds for each pass in order (1st, 2nd, ...): it gets harder as passes go.
 			WIN_ODDS: bindings.text(
-				'10000,10000,10000,20000,20000,20000,100000,100000,100000',
+				'10000,10000,10000,20000,20000,20000,50000,50000,50000,100000,100000,100000',
 			),
 			COOLDOWN_SECONDS: bindings.text('3'),
 			CLAIM_WINDOW_SECONDS: bindings.text('300'),
