@@ -101,6 +101,8 @@ form button { font: inherit; font-size: 13px; background: var(--orange); color: 
 form button:disabled { opacity: .5; cursor: default; }
 
 .hint { margin: 0; align-self: end; padding-bottom: 2px; font-size: 14px; color: var(--muted); font-style: italic; }
+.hint a { color: var(--orange); text-decoration: none; font-style: normal; font-weight: 500; }
+.hint a:hover { text-decoration: underline; }
 
 /* The hint, claim form and Turnstile share one fixed-height slot, so swapping between
    them never changes the card's height (no layout shift). */
@@ -350,6 +352,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		<div class="out" id="out" aria-live="polite"><p><span class="sk w-a"></span></p><p><span class="sk w-b"></span></p></div>
 		<div class="slot">
 			<p class="hint off" id="hint">← → to pick · Enter to pull · one pull every 3s</p>
+			<p class="hint off" id="follow">Follow <a href="https://x.com/mehulmpt" target="_blank" rel="noopener noreferrer">@mehulmpt</a> on X for more.</p>
 			<form id="claim" class="off" autocomplete="on">
 				<span class="p">&gt;</span>
 				<input id="email" type="email" name="email" placeholder="you@example.com" required autocomplete="email" spellcheck="false">
@@ -467,6 +470,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		tickets.forEach((t) => t.classList.remove("chosen", "won", "lost", "rolling"));
 		$("tickets").classList.remove("locked");
 		say([line({ cls: "m", text: "Pick a ticket and test your luck." })]);
+		$("follow").classList.add("off");
 		enable(true);
 	}
 
@@ -741,7 +745,8 @@ form button:disabled { opacity: .5; cursor: default; }
 		enable(false);
 		$("tickets").classList.add("locked");
 		setLeft(0);
-		say([line({ cls: "warn", text: "All passes have been claimed. Thanks for playing." })]);
+		say([line({ cls: "warn", text: "All passes have been claimed. Thanks for playing!" }), line({ cls: "m", text: "Mehul will reach out to the winners shortly with their pass links." })]);
+		$("follow").classList.remove("off");
 	}
 
 	function bump(el) {
