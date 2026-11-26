@@ -1,6 +1,6 @@
 # claudepass
 
-12 Claude Code guest passes (1 free week each), shared by [@mehulmpt](https://x.com/mehulmpt), [@YashSolanki_](https://x.com/YashSolanki_), [@MaheshBauti](https://x.com/MaheshBauti) and [@BhagyaMudgal](https://x.com/BhagyaMudgal). Live at **[claudepass.mehulmohan.com](https://claudepass.mehulmohan.com)**.
+18 Claude Code guest passes (1 free week each), shared by [@mehulmpt](https://x.com/mehulmpt), [@YashSolanki_](https://x.com/YashSolanki_), [@MaheshBauti](https://x.com/MaheshBauti), [@BhagyaMudgal](https://x.com/BhagyaMudgal), [@sachingurjar_4](https://x.com/sachingurjar_4) and [@mohittwwt](https://x.com/mohittwwt). Live at **[claudepass.mehulmohan.com](https://claudepass.mehulmohan.com)**.
 
 Pick a ticket and the server draws. Win, and you have 5 minutes to leave your email.
 
@@ -8,7 +8,7 @@ Pick a ticket and the server draws. Win, and you have 5 minutes to leave your em
 
 - **One pull every 3 seconds per network** (IPv4 address or IPv6 `/64`), enforced atomically in D1, plus a per-network rate limit.
 - **A fresh Turnstile check** on every pull.
-- **Server-side roll** with `crypto.getRandomValues`. Odds: 1 in 10,000 for every pass.
+- **Server-side roll** with `crypto.getRandomValues`. Odds: 1 in 1,000 for every pass.
 - **A win reserves a pass** behind a single-use token for 5 minutes. Unclaimed passes go back in the pool.
 - **One pass per inbox and per network.**
 - **Test mode:** IPs in the `TEST_IPS` secret always win but never save anything or use a pass. Off when set to `none`.

@@ -106,7 +106,17 @@ export const DONORS = [
 	{ handle: 'YashSolanki_', passes: 3 },
 	{ handle: 'MaheshBauti', passes: 3 },
 	{ handle: 'BhagyaMudgal', passes: 3 },
+	{ handle: 'sachingurjar_4', passes: 3 },
+	{ handle: 'mohittwwt', passes: 3 },
 ]
+
+/** "@a, @b and @c" */
+const donorHandles = () => {
+	const names = DONORS.map((d) => `@${d.handle}`)
+	return names.length < 2
+		? names.join('')
+		: `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
+}
 
 const donorList = () =>
 	DONORS.map(
@@ -209,7 +219,7 @@ const html = ({
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude Code guest passes · claudepass</title>
-<meta name="description" content="Win a free week of Claude Code. 12 guest passes up for grabs, shared by @mehulmpt, @YashSolanki_, @MaheshBauti and @BhagyaMudgal: pick a ticket, one pull every 3 seconds, long odds. Winners get the pass by email.">
+<meta name="description" content="Win a free week of Claude Code. ${ladder.length} guest passes up for grabs, shared by ${donorHandles()}: pick a ticket, one pull every 3 seconds, long odds. Winners get the pass by email.">
 <meta name="author" content="Mehul Mohan">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#0e0e11">
@@ -220,7 +230,7 @@ const html = ({
 <meta property="og:site_name" content="claudepass">
 <meta property="og:url" content="${SITE}/">
 <meta property="og:title" content="Claude Code guest passes">
-<meta property="og:description" content="12 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 3 seconds. Odds: ${fmtLadder(ladder)}.">
+<meta property="og:description" content="${ladder.length} free weeks of Claude Code up for grabs. Pick a ticket, one pull every 3 seconds. Odds: ${fmtLadder(ladder)}.">
 <meta property="og:image" content="${SITE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -232,7 +242,7 @@ const html = ({
 <meta name="twitter:site" content="@mehulmpt">
 <meta name="twitter:creator" content="@mehulmpt">
 <meta name="twitter:title" content="Claude Code guest passes">
-<meta name="twitter:description" content="12 free weeks of Claude Code up for grabs. Pick a ticket, one pull every 3 seconds, long odds.">
+<meta name="twitter:description" content="${ladder.length} free weeks of Claude Code up for grabs. Pick a ticket, one pull every 3 seconds, long odds.">
 <meta name="twitter:image" content="${SITE}/og.png">
 <meta name="twitter:image:alt" content="Three Claude Code guest pass tickets, one glowing orange.">
 
@@ -383,7 +393,7 @@ form button:disabled { opacity: .5; cursor: default; }
 .donors h2 { margin: 0 0 10px; font: 500 13px var(--mono); color: var(--lav); }
 .donors ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .donors li { display: flex; align-items: center; gap: 12px; font-size: 14px; }
-.donors li a { color: var(--text); text-decoration: none; min-width: 14ch; }
+.donors li a { color: var(--text); text-decoration: none; min-width: 16ch; }
 .donors li a:hover { color: var(--orange); }
 .donors .stars { color: var(--orange); letter-spacing: 3px; flex: 1; }
 .donors .n { color: var(--muted); font-size: 13px; }
