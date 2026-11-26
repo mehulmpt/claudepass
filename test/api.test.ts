@@ -366,6 +366,9 @@ describe('live stats', () => {
 			total: z.number(),
 			oddsOneIn: z.number(),
 			pulls: z.number(),
+			winners: z.array(
+				z.object({ email: z.string(), at: z.number() }).strict(),
+			),
 		})
 			.strict()
 			.parse(await res.json())
@@ -387,5 +390,39 @@ describe('config', () => {
 		).toEqual([
 			10000, 10000, 10000, 20000, 20000, 20000, 100000, 100000, 100000,
 		])
+	})
+})
+
+describe('winners board', () => {
+	it('lists claimed winners masked, never their full address', async () => {
+		const token = await reserve()
+		await claim({
+			ip: nextIp(),
+			token,
+			email: 'Secret.Person@acme-corp.dev',
+		})
+		const res = await api({ path: '/api/status', ip: nextIp() })
+		const text = await res.text()
+		expect(text.toLowerCase()).not.toContain('secret.person')
+		expect(text).not.toContain('acme-corp')
+		const body = z
+			.object({
+				winners: z.array(
+					z.object({ email: z.string(), at: z.number() }),
+				),
+			})
+			.parse(JSON.parse(text))
+		expect(body.winners.map((w) => w.email)).toEqual([
+			'secret•••••••@••••••••.dev',
+		])
+	})
+
+	it('does not list reservations that were never claimed', async () => {
+		await reserve()
+		const res = await api({ path: '/api/status', ip: nextIp() })
+		const body = z
+			.object({ winners: z.array(z.unknown()) })
+			.parse(await res.json())
+		expect(body.winners).toHaveLength(0)
 	})
 })

@@ -4,6 +4,7 @@ import { sendAdminNotice, sendWinnerEmail } from './email.ts'
 import {
 	checkEmail,
 	ipKey,
+	maskEmail,
 	oddsOneIn,
 	randomToken,
 	secureRandom,
@@ -168,9 +169,10 @@ async function verifyTurnstile({
 /** Global numbers only: identical for every visitor, so safe to cache at the edge. */
 async function stats(t: number) {
 	const { OPEN, TOTAL_PASSES, WIN_ODDS } = cfg()
-	const [remaining, pulls] = await Promise.all([
+	const [remaining, pulls, claimed] = await Promise.all([
 		remainingPasses(t),
 		totalPulls(),
+		winners(),
 	])
 	return {
 		open: OPEN,
@@ -181,6 +183,11 @@ async function stats(t: number) {
 			taken: TOTAL_PASSES - remaining,
 		}),
 		pulls,
+		// Masked here, so full addresses never leave the Worker or reach the edge cache.
+		winners: claimed.map((w) => ({
+			email: maskEmail(w.email),
+			at: w.redeemed_at,
+		})),
 	}
 }
 

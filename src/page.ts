@@ -319,6 +319,28 @@ form button:disabled { opacity: .5; cursor: default; }
 .src:hover { border-color: var(--lav); color: var(--lav); }
 .src:focus-visible { outline: 2px solid var(--lav); outline-offset: 2px; }
 
+.board {
+	margin: 22px 0 0; padding: 14px 16px; border: 1px solid var(--line-soft); border-radius: 12px;
+	background: #141418;
+}
+.board h2 { margin: 0 0 8px; font: 500 13px var(--mono); color: var(--lav); display: flex; justify-content: space-between; }
+#board-count { color: var(--muted); font-weight: 400; }
+.sk.w-count { width: 3ch; }
+.board ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.board li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: baseline; font-size: 12.5px; }
+.board .rank { color: var(--orange); }
+.board .mail { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board time { color: var(--dim); font: 11.5px var(--sans); }
+.board .empty { display: block; color: var(--muted); font: 12.5px var(--sans); }
+.board li.new .mail { color: var(--green); }
+/* Wide screens: a small sidebar beside the card (absolute, so it never shifts layout). */
+@media (min-width: 1380px) {
+	.board {
+		position: absolute; top: var(--clawd-room); left: calc(100% + 20px); width: 300px; margin: 0;
+	}
+	.board li { font-size: 12px; }
+}
+
 .donors {
 	margin: 22px 0 0; padding: 16px 18px; border: 1px solid var(--line-soft); border-radius: 12px;
 	background: #141418;
@@ -501,6 +523,11 @@ form button:disabled { opacity: .5; cursor: default; }
 	<p class="fine">Odds: ${fmtLadder(ladder)}. Winners get their pass by email.</p>
 	<a class="src" href="${REPO}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 6 2 12l6 6M16 6l6 6-6 6"/></svg>View source code</a>
 </div>
+
+<aside class="board" aria-labelledby="board-title">
+	<h2 id="board-title">Winners <span id="board-count"><span class="sk w-count"></span></span></h2>
+	<ol id="board-list"><li class="empty">No winners yet. Could be you.</li></ol>
+</aside>
 
 <section class="donors" aria-labelledby="donors-title">
 	<h2 id="donors-title">Passes shared by</h2>
@@ -825,7 +852,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		emailIn.focus();
 		countdown({
 			until: expiresAt,
-			render: (t) => (p.textContent = "Enter your email within " + t + ". Mehul will send your pass to this address."),
+			render: (t) => (p.textContent = "Enter your email within " + t + ". Mehul sends your pass here; it shows masked on the winners board."),
 			done: () => {
 				form.classList.add("off");
 				sessionStorage.removeItem("claim");
@@ -847,9 +874,10 @@ form button:disabled { opacity: .5; cursor: default; }
 			sessionStorage.removeItem("claim");
 			claimToken = null;
 			say([
-				line({ cls: "ok", text: "✓ Claimed for " + emailIn.value.trim() + "." }),
+				line({ cls: "ok", text: "✓ Claimed for " + emailIn.value.trim() + ". You're on the winners board." }),
 				line({ cls: "m", text: "A confirmation is on its way from giveaway@mehulmohan.com (check spam). Mehul will email you the pass personally." }),
 			]);
+			refreshStatus();
 			return;
 		}
 		const prev = out.querySelector(".bad"); if (prev) prev.remove();
@@ -877,6 +905,36 @@ form button:disabled { opacity: .5; cursor: default; }
 		lastPulls = n;
 	}
 
+	function ago(at) {
+		const s = Math.max(0, serverNow() - at);
+		if (s < 60) return "just now";
+		if (s < 3600) return Math.floor(s / 60) + "m ago";
+		if (s < 86400) return Math.floor(s / 3600) + "h ago";
+		return Math.floor(s / 86400) + "d ago";
+	}
+
+	let shownWinners = null;
+	function showWinners({ list, total }) {
+		if (!Array.isArray(list)) return;
+		$("board-count").textContent = list.length + "/" + (total ?? "?");
+		const ol = $("board-list");
+		if (list.length === 0) {
+			const li = document.createElement("li"); li.className = "empty"; li.textContent = "No winners yet. Could be you.";
+			ol.replaceChildren(li);
+		} else {
+			ol.replaceChildren(...list.map((w, i) => {
+				const li = document.createElement("li");
+				if (shownWinners !== null && i >= shownWinners) li.className = "new";
+				const rank = document.createElement("span"); rank.className = "rank"; rank.textContent = "✻" + (i + 1);
+				const mail = document.createElement("span"); mail.className = "mail"; mail.textContent = w.email; mail.title = w.email;
+				const time = document.createElement("time"); time.textContent = ago(w.at);
+				li.append(rank, mail, time);
+				return li;
+			}));
+		}
+		shownWinners = list.length;
+	}
+
 	function showOdds(oneIn) {
 		if (typeof oneIn === "number") $("odds").textContent = "⚄ odds 1 in " + oneIn.toLocaleString("en-US");
 	}
@@ -886,6 +944,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		if (typeof data.remaining === "number") setLeft(data.remaining);
 		showOdds(data.oddsOneIn);
 		showPulls(data.pulls);
+		showWinners({ list: data.winners, total: data.total });
 	}
 
 	// --- live counters ---------------------------------------------------------
@@ -897,6 +956,7 @@ form button:disabled { opacity: .5; cursor: default; }
 		if (status !== 200) return;
 		showPulls(data.pulls);
 		showOdds(data.oddsOneIn);
+		showWinners({ list: data.winners, total: data.total });
 		if (typeof data.remaining === "number") setLeft(data.remaining);
 		if (data.remaining === 0 && !busy && !claimToken) soldOut();
 	}
@@ -920,11 +980,13 @@ form button:disabled { opacity: .5; cursor: default; }
 			$("left").textContent = "—";
 			$("odds").textContent = "⚄ odds —";
 			$("pulls").textContent = "⟳ —";
+			$("board-count").textContent = "";
 			say([line({ cls: "bad", text: "✗ " + (data.message || "Couldn't reach the server.") }), line({ cls: "m", text: "Reload the page in a minute." })]);
 			return;
 		}
 		showOdds(data.oddsOneIn);
 		showPulls(data.pulls);
+		showWinners({ list: data.winners, total: data.total });
 		setLeft(data.remaining ?? 0);
 
 		const saved = JSON.parse(sessionStorage.getItem("claim") || "null");

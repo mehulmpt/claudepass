@@ -174,3 +174,49 @@ export function oddsOneIn({
 export function parseLadder(raw: string): number[] {
 	return OddsLadder.parse(raw)
 }
+
+// Big consumer providers: showing these domains reveals nothing about the person.
+const COMMON_DOMAINS = new Set([
+	'gmail.com',
+	'googlemail.com',
+	'proton.me',
+	'protonmail.com',
+	'pm.me',
+	'outlook.com',
+	'hotmail.com',
+	'live.com',
+	'msn.com',
+	'yahoo.com',
+	'ymail.com',
+	'icloud.com',
+	'me.com',
+	'mac.com',
+	'aol.com',
+	'gmx.com',
+	'zoho.com',
+	'fastmail.com',
+	'hey.com',
+	'mail.com',
+	'yandex.com',
+	'qq.com',
+	'163.com',
+	'rediffmail.com',
+])
+
+/**
+ * Public form of a winner's email: the back half of the local part is masked, and
+ * the domain is masked down to its TLD unless it is a common provider.
+ * "mehulmohan@gmail.com" -> "mehul•••••@gmail.com", "jo@acme.io" -> "j•@••••.io"
+ */
+export function maskEmail(address: string): string {
+	const lower = address.trim().toLowerCase()
+	const at = lower.lastIndexOf('@')
+	const local = lower.slice(0, at)
+	const domain = lower.slice(at + 1)
+	const keep = Math.floor(local.length / 2)
+	const maskedLocal = local.slice(0, keep) + '•'.repeat(local.length - keep)
+	if (COMMON_DOMAINS.has(domain)) return `${maskedLocal}@${domain}`
+	const tld = domain.slice(domain.lastIndexOf('.') + 1)
+	const rest = domain.length - tld.length - 1
+	return `${maskedLocal}@${'•'.repeat(Math.min(Math.max(rest, 3), 8))}.${tld}`
+}

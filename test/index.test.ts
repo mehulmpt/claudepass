@@ -6,6 +6,7 @@ import {
 	oddsOneIn,
 	parseLadder,
 	randomToken,
+	maskEmail,
 } from '../src/lib.ts'
 
 describe('ipKey', () => {
@@ -81,5 +82,17 @@ describe('odds ladder', () => {
 	it('rejects bad config', () => {
 		expect(() => parseLadder('0.05')).toThrow()
 		expect(() => parseLadder('10,abc')).toThrow()
+	})
+})
+
+describe('maskEmail', () => {
+	it('masks the back half of the local part and keeps common domains', () => {
+		expect(maskEmail('mehulmohan@gmail.com')).toBe('mehul•••••@gmail.com')
+		expect(maskEmail('Ab@Proton.me')).toBe('a•@proton.me')
+		expect(maskEmail('x@outlook.com')).toBe('•@outlook.com')
+	})
+	it('masks uncommon domains down to the TLD', () => {
+		expect(maskEmail('jane.doe@acme.io')).toBe('jane••••@••••.io')
+		expect(maskEmail('a@mail.company.co.uk')).toBe('•@••••••••.uk')
 	})
 })
