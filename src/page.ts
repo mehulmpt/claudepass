@@ -79,21 +79,26 @@ const jsonLd = (ladder: number[]) =>
 		},
 	}).replaceAll('<', '\\u003c')
 
-/** [10000, 10000, 20000] -> "1 in 10,000 ×2 → 20,000" */
-const fmtLadder = (ladder: number[]) =>
-	'1 in ' +
-	ladder
-		.reduce<{ n: number; times: number }[]>((runs, n) => {
-			const last = runs.at(-1)
-			if (last && last.n === n) last.times++
-			else runs.push({ n, times: 1 })
-			return runs
-		}, [])
-		.map(
-			({ n, times }) =>
-				n.toLocaleString('en-US') + (times > 1 ? ` ×${times}` : ''),
-		)
-		.join(' → ')
+/** [10000, 10000, 20000] -> "1 in 10,000 ×2 → 20,000"; one value for every pass -> "1 in 10,000" */
+const fmtLadder = (ladder: number[]) => {
+	const runs = ladder.reduce<{ n: number; times: number }[]>((acc, n) => {
+		const last = acc.at(-1)
+		if (last && last.n === n) last.times++
+		else acc.push({ n, times: 1 })
+		return acc
+	}, [])
+	if (runs.length === 1)
+		return '1 in ' + (runs[0]?.n ?? 0).toLocaleString('en-US')
+	return (
+		'1 in ' +
+		runs
+			.map(
+				({ n, times }) =>
+					n.toLocaleString('en-US') + (times > 1 ? ` ×${times}` : ''),
+			)
+			.join(' → ')
+	)
+}
 
 /** Who is sharing passes. The total must match TOTAL_PASSES (checked in tests). */
 export const DONORS = [

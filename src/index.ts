@@ -325,7 +325,7 @@ async function play(req: Request): Promise<Response> {
 			status: 429,
 		})
 
-	// 4. Roll on the server with the CSPRNG. Odds get harder with each pass already taken.
+	// 4. Roll on the server with the CSPRNG, at the odds set for the next pass (WIN_ODDS).
 	const oneIn = oddsOneIn({
 		ladder: WIN_ODDS,
 		taken: TOTAL_PASSES - remaining,

@@ -8,7 +8,7 @@ Pick a ticket and the server draws. Win, and you have 5 minutes to leave your em
 
 - **One pull every 3 seconds per network** (IPv4 address or IPv6 `/64`), enforced atomically in D1, plus a per-network rate limit.
 - **A fresh Turnstile check** on every pull.
-- **Server-side roll** with `crypto.getRandomValues`. Odds: 1 in 10,000 for passes 1–3, 20,000 for 4–6, 50,000 for 7–9, 100,000 for 10–12.
+- **Server-side roll** with `crypto.getRandomValues`. Odds: 1 in 10,000 for every pass.
 - **A win reserves a pass** behind a single-use token for 5 minutes. Unclaimed passes go back in the pool.
 - **One pass per inbox and per network.**
 - **Test mode:** IPs in the `TEST_IPS` secret always win but never save anything or use a pass. Off when set to `none`.
