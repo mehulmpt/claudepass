@@ -7,7 +7,7 @@ import {
 	maskEmail,
 	oddsOneIn,
 	randomToken,
-	secureRandom,
+	rollWin,
 	sha256,
 } from './lib.ts'
 import { renderPage } from './page.ts'
@@ -313,7 +313,7 @@ async function play(req: Request): Promise<Response> {
 		taken: TOTAL_PASSES - remaining,
 	})
 	let token: string | null = null
-	if (secureRandom() < 1 / oneIn) {
+	if (rollWin(oneIn)) {
 		const candidate = randomToken()
 		// Reserve a pass only if one is free and this network holds none: not one already
 		// claimed, and not one still waiting to be claimed (the claim window outlasts the

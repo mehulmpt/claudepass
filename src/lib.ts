@@ -121,6 +121,14 @@ export function secureRandom(): number {
 	return buf[0] / 2 ** 32
 }
 
+/**
+ * The draw: true with probability 1/oneIn. Uses the platform CSPRNG via secureRandom(),
+ * whose 32-bit resolution makes any rounding bias smaller than 1 in 4 billion.
+ */
+export function rollWin(oneIn: number): boolean {
+	return secureRandom() < 1 / oneIn
+}
+
 export function randomToken(bytes = 32): string {
 	const buf = new Uint8Array(bytes)
 	crypto.getRandomValues(buf)
